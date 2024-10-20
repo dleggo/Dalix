@@ -1,3 +1,10 @@
+# Notes
+Re-add ```CheckSpace``` to  /etc/pacman.conf
+
+Add sed line to automatically comment out "CheckSpace"
+
+
+# Doc
 A good OS should...
 1. Be usable by a 4 year old
 2. Be easily managable (Apps, settings, etc)
@@ -19,5 +26,5 @@ TackOS will attempt to implement this in the following ways
 6. Have a graphical tool for ***many*** config options
 7. Use helloSystems Menubar
 8. Use AppImage
-9. Use Debian
+9. FIXME
 10. TODO
