@@ -1,7 +1,4 @@
 # Notes
-Re-add ```CheckSpace``` to  /etc/pacman.conf
-
-Add sed line to automatically comment out "CheckSpace"
 
 
 # Doc
