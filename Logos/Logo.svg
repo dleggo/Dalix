@@ -9,9 +9,9 @@
    id="svg1"
    inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
    sodipodi:docname="Logo.svg"
-   inkscape:export-filename="Logo.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
+   inkscape:export-filename="Logo48x48.png"
+   inkscape:export-xdpi="9"
+   inkscape:export-ydpi="9"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -26,9 +26,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="0.90509668"
-     inkscape:cx="274.5563"
-     inkscape:cy="282.29029"
+     inkscape:zoom="0.45254834"
+     inkscape:cx="303.83494"
+     inkscape:cy="283.94757"
      inkscape:window-width="1360"
      inkscape:window-height="702"
      inkscape:window-x="0"
@@ -90,57 +90,60 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <circle
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:8.709;stroke-linecap:round;stroke-linejoin:round"
-       id="path1"
-       cx="256"
-       cy="256"
-       r="250.80194" />
     <rect
-       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.309;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#ffffff;stroke-width:8.709;stroke-linecap:round;stroke-linejoin:round;fill-opacity:1"
+       id="rect1"
+       width="471.7728"
+       height="471.7728"
+       x="20.113602"
+       y="20.113602"
+       ry="118.21941"
+       rx="0" />
+    <rect
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
        id="rect4"
-       width="168.75"
-       height="168.75"
-       x="186.13113"
-       y="-174.76591"
+       width="147.62334"
+       height="147.62334"
+       x="208.15388"
+       y="-152.88609"
        transform="rotate(45)"
-       ry="23.4375" />
+       ry="20.503241" />
     <rect
-       style="fill:#002dff;fill-opacity:1;stroke:none;stroke-width:0.309;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#002dff;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
        id="rect5"
-       width="168.75"
-       height="168.75"
-       x="369.88116"
-       y="8.9840841"
+       width="147.62334"
+       height="147.62334"
+       x="368.89932"
+       y="7.8593216"
        transform="rotate(45)"
-       ry="29.6875" />
+       ry="25.970772" />
     <rect
-       style="fill:#ffe300;fill-opacity:1;stroke:none;stroke-width:0.309;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#ffe300;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
        id="rect6"
-       width="168.75"
-       height="168.75"
-       x="186.13113"
-       y="8.9840841"
+       width="147.62334"
+       height="147.62334"
+       x="208.15388"
+       y="7.8593216"
        transform="rotate(45)"
-       ry="24.21875" />
+       ry="21.186684" />
     <rect
-       style="fill:#00ff07;fill-opacity:1;stroke:none;stroke-width:0.309;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#00ff07;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
        id="rect7"
-       width="168.75"
-       height="168.75"
-       x="369.88116"
-       y="-174.76591"
+       width="147.62334"
+       height="147.62334"
+       x="368.89932"
+       y="-152.88609"
        transform="rotate(45)"
-       ry="20.3125" />
+       ry="17.769476" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.309;stroke-linecap:round;stroke-linejoin:round;opacity:1"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
        id="rect8"
-       width="168.75"
-       height="168.75"
-       x="277.66367"
-       y="-84.375008"
+       width="147.62334"
+       height="147.62334"
+       x="288.22699"
+       y="-73.811676"
        transform="rotate(45)"
-       ry="84.375"
-       rx="84.375" />
+       ry="73.811668"
+       rx="73.811668" />
   </g>
 </svg>

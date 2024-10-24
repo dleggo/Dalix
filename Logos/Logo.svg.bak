@@ -8,7 +8,10 @@
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
-   sodipodi:docname="BetterLogo.svg"
+   sodipodi:docname="Logo.svg"
+   inkscape:export-filename="Logo48x48.png"
+   inkscape:export-xdpi="9"
+   inkscape:export-ydpi="9"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +27,7 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
      inkscape:zoom="0.90509668"
-     inkscape:cx="274.00388"
+     inkscape:cx="274.5563"
      inkscape:cy="282.29029"
      inkscape:window-width="1360"
      inkscape:window-height="702"
@@ -87,6 +90,12 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <circle
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:8.709;stroke-linecap:round;stroke-linejoin:round"
+       id="path1"
+       cx="256"
+       cy="256"
+       r="250.80194" />
     <rect
        style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.309;stroke-linecap:round;stroke-linejoin:round"
        id="rect4"
@@ -124,7 +133,7 @@
        transform="rotate(45)"
        ry="20.3125" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.309;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.309;stroke-linecap:round;stroke-linejoin:round;opacity:1"
        id="rect8"
        width="168.75"
        height="168.75"

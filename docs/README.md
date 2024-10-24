@@ -1,6 +1,4 @@
-![Logo](../Logo/Logo.png "Logo")
-
-# FalkonOS
+# ![Logo](../Logos/Logo48x48.png "Logo")  FalkonOS
 Is a project which aims to make a MacOS like experience for Linux.
 This is not your traditional Linux distro as it completly abandons the FHS.
 
