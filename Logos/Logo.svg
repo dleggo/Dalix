@@ -26,9 +26,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="0.45254834"
-     inkscape:cx="303.83494"
-     inkscape:cy="283.94757"
+     inkscape:zoom="0.64"
+     inkscape:cx="265.625"
+     inkscape:cy="286.71875"
      inkscape:window-width="1360"
      inkscape:window-height="702"
      inkscape:window-x="0"
@@ -37,6 +37,32 @@
      inkscape:current-layer="layer1" />
   <defs
      id="defs1">
+    <filter
+       id="selectable_hidder_filter"
+       width="1"
+       height="1"
+       x="0"
+       y="0"
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="LPE boolean visibility">
+      <feComposite
+         id="boolops_hidder_primitive"
+         result="composite1"
+         operator="arithmetic"
+         in2="SourceGraphic"
+         in="BackgroundImage" />
+    </filter>
+    <inkscape:path-effect
+       effect="bool_op"
+       operand-path=""
+       id="path-effect3"
+       is_visible="true"
+       lpeversion="1"
+       operation="diff"
+       swap-operands="false"
+       filltype-this="from-curve"
+       filter=""
+       filltype-operand="from-curve" />
     <inkscape:path-effect
        effect="mirror_symmetry"
        start_point="344.7336,120.929"
@@ -100,50 +126,51 @@
        ry="118.21941"
        rx="0" />
     <rect
-       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.226874;stroke-linecap:round;stroke-linejoin:round"
        id="rect4"
-       width="147.62334"
-       height="147.62334"
-       x="208.15388"
-       y="-152.88609"
+       width="123.89929"
+       height="123.89929"
+       x="226.94948"
+       y="-134.25099"
        transform="rotate(45)"
-       ry="20.503241" />
+       ry="17.208235" />
     <rect
-       style="fill:#002dff;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#002dff;fill-opacity:1;stroke:none;stroke-width:0.226874;stroke-linecap:round;stroke-linejoin:round"
        id="rect5"
-       width="147.62334"
-       height="147.62334"
-       x="368.89932"
-       y="7.8593216"
+       width="123.89929"
+       height="123.89929"
+       x="373.73148"
+       y="12.530974"
        transform="rotate(45)"
-       ry="25.970772" />
+       ry="21.797096" />
     <rect
-       style="fill:#ffe300;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#ffe300;fill-opacity:1;stroke:none;stroke-width:0.226874;stroke-linecap:round;stroke-linejoin:round"
        id="rect6"
-       width="147.62334"
-       height="147.62334"
-       x="208.15388"
-       y="7.8593216"
+       width="123.89929"
+       height="123.89929"
+       x="226.94948"
+       y="12.530974"
        transform="rotate(45)"
-       ry="21.186684" />
+       ry="17.781843" />
     <rect
-       style="fill:#00ff07;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#00ff07;fill-opacity:1;stroke:none;stroke-width:0.226874;stroke-linecap:round;stroke-linejoin:round"
        id="rect7"
-       width="147.62334"
-       height="147.62334"
-       x="368.89932"
-       y="-152.88609"
+       width="123.89929"
+       height="123.89929"
+       x="373.73148"
+       y="-134.25099"
        transform="rotate(45)"
-       ry="17.769476" />
-    <rect
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.270315;stroke-linecap:round;stroke-linejoin:round"
+       ry="14.913804" />
+    <path
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.275385;stroke-linecap:round;stroke-linejoin:round"
        id="rect8"
-       width="147.62334"
-       height="147.62334"
-       x="288.22699"
-       y="-73.811676"
+       width="150.39169"
+       height="150.39169"
+       x="286.8428"
+       y="-75.195854"
        transform="rotate(45)"
-       ry="73.811668"
-       rx="73.811668" />
+       ry="75.195847"
+       rx="75.195847"
+       sodipodi:type="rect" />
   </g>
 </svg>
