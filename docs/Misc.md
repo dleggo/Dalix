@@ -1,4 +1,4 @@
-# BrainDump
+# Misc
 
 ## A good OS should...
 1. Be usable by a 4 year old
