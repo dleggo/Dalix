@@ -30,10 +30,17 @@
 ```kadotad``` will recognize it and extract the deb into ```tmp/*``` where ```*``` is the name and
 version of the package. It will then simulate installation into a chroot. ```tmp/*/chroot``` Then it
 will read the dependencies of the application, and place that in its own meta-data file alongside
-other important information.
+other important information. It then copies ```tmp/*``` into ```/Applications/*.app```
+
+> ## **Implementation detail.**
+> When ```kadotad``` converts a .deb into a AppBundle it creates ```AppRun``` point to the ```.desktop```
+> file in ```/usr/share/applications/``` If there is multiple ```.desktop``` files there or if there
+> are non then ```kadotad``` will display an error message saying "**Error installing app *\n Multiple
+> Desktop files exist. This functionality is planned to be implemented in the future. Sorry for the
+> inconvenience.**"
 
 
-## Format of usefull information
+## Developer information
 
 ### Metadata file
 ```toml
@@ -70,9 +77,12 @@ For an example package called abcd
 ```
 /Applications/abcd***VERSION/
 ├── pkg-info (see above)
-├── RunApp
+├── AppRun
 └── chroot
 	├── usr
 	│	└── ...
 	└── ... (basically an app installed to a chroot)
 ```
+
+In an AppBundle ```AppRun``` Can be a link to a .desktop file, a link to an executable, a shell file,
+or a script with a proper shebang
