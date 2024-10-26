@@ -77,7 +77,8 @@ For an example package called abcd
 ```
 /Applications/abcd***VERSION/
 ├── pkg-info (see above)
-├── AppRun
+├── AppRun -> chroot/usr/share/...
+├── icon.png
 └── chroot
 	├── usr
 	│	└── ...
