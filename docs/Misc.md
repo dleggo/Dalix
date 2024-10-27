@@ -55,7 +55,7 @@ the user that the app will be converted so it can be used.
 [pkg]
 
 name = "Your Package Name"
-version = 4.5.6.7
+version = "4.5.6.7"
 developer = "You/Your company's name"
 discription = '''
 A description which can span
