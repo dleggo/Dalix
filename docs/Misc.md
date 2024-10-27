@@ -44,8 +44,6 @@ steps will get described in more detail
 ```kadotad``` will use ```watchdog``` to moniter  the directory and will display a message informing
 the user that the app will be converted so it can be used.
 
-###
-
 
 ## Developer information
 
