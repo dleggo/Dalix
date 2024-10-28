@@ -1,5 +1,5 @@
-- [ ] implement kpkg
-	- [ ] get meta-data
+- [ ] implement pkg
 	- [ ] install debian package to chroot
+	- [ ] get meta-data
 	- [ ] list folders (and files) to be bind mounted (all packages in the system that do not have conflicts with the package)
 	- [ ] launch bwrap with correct options

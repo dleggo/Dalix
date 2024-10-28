@@ -1,4 +1,4 @@
-# ![Logo](https://github.com/dleggo/Kadota/blob/main/Logos/Logo48x48.png?raw=true "Logo")  Kadota
+# ![Logo](https://github.com/dleggo/Dalix/blob/main/Logos/Logo48x48.png?raw=true "Logo")  Dalix
 Is a project which aims to make a MacOS like experience for Linux.
 This is not your traditional Linux distro as it completly abandons the FHS.
 

@@ -1,2 +1,2 @@
-# Kadota
-See our [homepage](https://dleggo.github.io/Kadota) for information
+# Dalix
+See our [homepage](https://dleggo.github.io/Dalix) for information
