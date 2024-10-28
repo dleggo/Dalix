@@ -36,7 +36,7 @@ steps will get described in more detail
 > ## **Implementation detail.**
 > When ```dalixd``` converts a .deb into a AppBundle it creates ```AppRun``` point to the ```.desktop```
 > file in ```/usr/share/applications/``` If there is multiple ```.desktop``` files there or if there
-> are non then ```dalixd``` will display an error message saying "**Error installing app *\n Multiple
+> are non then ```dalixd``` will display an error message saying "**Error installing app *. Multiple
 > Desktop files exist. This functionality is planned to be implemented in the future. Sorry for the
 > inconvenience.**"
 
