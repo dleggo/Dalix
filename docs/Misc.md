@@ -1,5 +1,9 @@
 # Misc
 
+> Clarification note: ```Package``` is used to describe a system package. ```Application``` is used
+> to describe a user installed application. ```libsqsh``` is a system package. ```LibreOffice```
+> is an application. Just to get that out of the way. ```:)```
+
 ## A good OS should...
 1. Be usable by a 4 year old
 2. Be easily managable (Apps, settings, etc)
@@ -47,7 +51,31 @@ the user that the app will be converted so it can be used.
 
 ## Developer information
 
-### Metadata file
+### Applications
+
+#### App Bundle Structure
+For an example package called abcd
+```
+/Applications/LibreOffice.app/
+├── pkg-info
+├── AppRun -> chroot/usr/bin/...
+├── icon.png
+└── chroot
+	├── usr
+	│	└── ...
+	└── ... (basically an app installed to a chroot)
+```
+
+When an app is installed to this chroot there is a basic skeleton that exists.
+That skeloten is the base (debian) installation. Almost all of the root directory folders are
+mounted read-only into the chroot.
+
+In an AppBundle ```AppRun``` Can be a link to a .desktop file, a link to an executable, a shell file,
+or a script with a proper shebang.
+
+### Packages
+
+#### Metadata file
 ```toml
 # ./pkg-info.toml
 
@@ -83,22 +111,15 @@ dalix_app = true
 [other]
 ```
 
-### App Bundle Structure
-For an example package called abcd
-```
-/Applications/abcd***VERSION/
-├── pkg-info (see above)
-├── AppRun -> chroot/usr/share/...
-├── icon.png
-└── chroot
-	├── usr
-	│	└── ...
-	└── ... (basically an app installed to a chroot)
-```
 
-When an app is installed to this chroot there is a basic skeleton that exists.
-That skeloten is the base (debian) installation. Almost all of the root directory folders are
-mounted read-only into the chroot.
+### Base FS heiarchy.
 
-In an AppBundle ```AppRun``` Can be a link to a .desktop file, a link to an executable, a shell file,
-or a script with a proper shebang.
+```
+/
+├── Applications
+	├── LibreOffice
+├── System
+	├── Packages
+		├── libsqsh***1.2.3
+├── Boot
+```

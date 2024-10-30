@@ -3,3 +3,5 @@
 	- [ ] get meta-data
 	- [ ] list folders (and files) to be bind mounted (all packages in the system that do not have conflicts with the package)
 	- [ ] launch bwrap with correct options
+		- [ ] Mount base system readonly
+		- [ ] Mount required packages
