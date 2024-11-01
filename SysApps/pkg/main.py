@@ -1,6 +1,7 @@
 #!/bin/python3
 
 import os
+import tempfile
 
 class InvalidPathError(Exception):
 	pass
@@ -11,9 +12,19 @@ class InvalidFileTypeError(Exception):
 # Describing a Dalix Package
 class Pkg:
 	def __init__(self, path: str):
-		if not os.path.exists(path):
-			raise InvalidPathError("Supplied path does not exist!")
-		# path exists
-		if path[-4:].lower() == ".deb":
-			raise InvalidFileTypeError(
-				"Supplied file cannot be a .deb file. Maybe use install_from_deb instead?")
+		self.path = path
+		self.metadata = None
+
+class App:
+	def __init__(self, path: str):
+		pass
+
+# delegates to install_pkg or install_app
+def install(path: str):
+	assert os.path.exists(path), "Supplied path does not exist!"
+	# create pkg directory
+	# extract pkg
+	# extract metadata
+
+if __name__ == "__main__":
+	install("")

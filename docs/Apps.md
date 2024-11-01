@@ -4,7 +4,7 @@
 For an example package of LibreOffice
 ```
 /Applications/LibreOffice.app/
-├── app-info
+├── info
 ├── AppRun -> chroot/usr/bin/...
 ├── icon.png
 └── chroot
@@ -13,9 +13,35 @@ For an example package of LibreOffice
 	└── ... (basically a pkg installed to a chroot)
 ```
 
-When an app is installed to its own chroot there is a basic skeleton that exists.
-That skeloten is the base (debian) installation. Almost all of the root directory folders are
-```--overlay```ed read-only into the chroot. Bubblewrap 0.11.0 (should) supports this. As of writing stable debian only has 0.8.0, so we must provide this seperatly.
+## Metadata file
+```toml
+# ./info
 
-In an AppBundle ```AppRun``` Can be a link to a .desktop file, a link to an executable, a shell file,
-or a script with a proper shebang.
+# currently only type 1 description files are supported.
+info-type = 1
+
+# Neccesary fields
+[main]
+
+name = "Your App Name"
+version = "4.5.6.7"
+developer = "You/Your company's name"
+description = '''
+The first line is the short description.
+All the other lines are a description
+which can span multiple lines.
+'''
+
+dependencies = '''
+libsqsh==1.2.3
+python>=3.10
+joy
+happiness
+love
+etc.
+'''
+
+Bubblewrap 0.11.0 supports overlaying FSs. As of writing stable debian only has 0.8.0, so we must provide this seperatly.
+
+In an AppBundle ```AppRun``` Can bea link to an executable, a shell file, or a script with a
+proper shebang.

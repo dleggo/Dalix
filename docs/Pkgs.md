@@ -13,7 +13,7 @@ For an example package of libsqsh
 
 ## Metadata file
 ```toml
-# ./pkg-info.toml
+# ./pkg-info
 
 # currently only type 1 description files are supported.
 info-type = 1
