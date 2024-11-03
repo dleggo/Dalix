@@ -2,13 +2,13 @@
 
 import os
 from tempfile import TemporaryDirectory
-import tomllib
+import toml
 
 def get_pkg_info(path: str) -> dict:
 	assert os.path.exists(path), "Package not found!"
 	assert os.path.exist(path + "/pkg-info") # FIXME
 	with open(path + "/pkg-info", "rb") as f:
-		info = tomllib.load(f)
+		info = toml.load(f)
 	return info
 
 def get_deb_info(path: str) -> dict:
@@ -23,7 +23,7 @@ def get_deb_info(path: str) -> dict:
 			for b in a:
 				if b[0] == " " or b[0] == "\t":
 					if info_list:
-						info_list[-1] = (info_list[-1][0], info_list[-1][1] + b)
+						info_list[-1] = (info_list[-1][0], info_list[-1][1] + "\n"  + b)
 					else:
 						raise ValueError("Invalid control file in package!")
 				else:
@@ -37,6 +37,18 @@ def get_deb_info(path: str) -> dict:
 	for a in info_list:
 		info[a[0]] = a[1]
 	return info
+
+def deb_to_pkg_info(info: dict) -> dict:
+	pkg_info = {
+		"info-type": 1,
+		"pkg": {}
+	}
+	try:
+		pkg_info["pkg"]["name"] = info["Package"]
+		pkg_info["pkg"]["version"] = info["Version"]
+		pkg_info["pkg"]["arch"] = info["Architecture"]
+	except KeyError:
+		raise ValueError("Invalid debian control file in package!")
 
 # path should point to a .deb file
 def install_deb(path: str, root: str):

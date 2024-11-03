@@ -23,7 +23,8 @@ info-type = 1
 
 name = "Your Package Name"
 version = "4.5.6.7"
-developer = "You/Your company's name"
+arch = "Arch in the same format as debians e.g. amd64 arm64 etc."
+maintainer = "You/Your company's name"
 description = '''
 The first line is the short description.
 All the other lines are a description
