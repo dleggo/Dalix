@@ -16,22 +16,22 @@ For an example package of libsqsh
 # ./pkg-info
 
 # currently only type 1 description files are supported.
-info-type = 1
+InfoType = 1
 
 # Neccesary fields
-[pkg]
+[Package]
 
-name = "Your Package Name"
-version = "4.5.6.7"
-arch = "Arch in the same format as debians e.g. amd64 arm64 etc."
-maintainer = "You/Your company's name"
-description = '''
+Name = "Your Package Name"
+Version = "4.5.6.7"
+Arch = "Arch in the same format as debians e.g. amd64 arm64 etc."
+Maintainer = "You/Your company's name"
+Description = '''
 The first line is the short description.
 All the other lines are a description
 which can span multiple lines.
 '''
 
-dependencies = '''
+Dependencies = '''
 libsqsh==1.2.3
 python>=3.10
 joy
@@ -41,5 +41,5 @@ etc.
 '''
 
 # For use in automated scripts so there only has to be one meta-data file
-[other]
+[Other]
 ```

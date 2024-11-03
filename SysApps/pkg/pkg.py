@@ -40,19 +40,19 @@ def get_deb_info(path: str) -> dict:
 
 def deb_to_pkg_info(info: dict) -> dict:
 	pkg_info = {
-		"info-type": 1,
-		"pkg": {}
+		"InfoType": 1,
+		"Package": {}
 	}
 	try:
-		pkg_info["pkg"]["name"] = info["Package"]
-		pkg_info["pkg"]["version"] = info["Version"]
-		pkg_info["pkg"]["arch"] = info["Architecture"]
-		pkg_info["pkg"]["maintainer"] = info["Maintainer"]
-		pkg_info["pkg"]["description"] = info["Description"]
+		pkg_info["Package"]["Name"] = info["Package"]
+		pkg_info["Package"]["Version"] = info["Version"]
+		pkg_info["Package"]["Arch"] = info["Architecture"]
+		pkg_info["Package"]["Maintainer"] = info["Maintainer"]
+		pkg_info["Package"]["Description"] = info["Description"]
 		if "Depends" in info:
-			pkg_info["pkg"]["dependencies"] = info["Depends"]
+			pkg_info["Package"]["Dependencies"] = info["Depends"]
 		else:
-			pkg_info["pkg"]["dependencies"] = ""
+			pkg_info["Package"]["Dependencies"] = ""
 	except KeyError:
 		raise ValueError("Invalid debian control file in package!")
 	return pkg_info
@@ -69,6 +69,11 @@ def install_deb(path: str, root: str):
 		info = get_deb_info(path)
 		info = deb_to_pkg_info(info)
 		print(info)
+		os.system(f"cp {tmpdir} {root}/System/Packages")
+
 
 if __name__ == "__main__":
-	install_deb("/home/derek/Code/Dalix/Resources/bwrap.deb", "/home/derek/Code/Dalix/Tests")
+	install_deb(
+		"/home/derek/Code/Dalix/Resources/bwrap.deb",
+		"/home/derek/Code/Dalix/Tests/testroot"
+	)
