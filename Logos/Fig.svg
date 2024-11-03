@@ -9,7 +9,7 @@
    id="svg1"
    inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
    sodipodi:docname="Fig.svg"
-   inkscape:export-filename="Logo48x48.png"
+   inkscape:export-filename="Logo512x512.png"
    inkscape:export-xdpi="9"
    inkscape:export-ydpi="9"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -68,16 +68,16 @@
      id="layer1">
     <path
        id="path12"
-       style="stroke-width:8.709;stroke-linecap:round;stroke-linejoin:round"
-       d="m 270.44921,183.13129 c -42.66568,0.24531 -30.89007,48.65331 -81.57421,95.77539 -29.64606,27.56255 -33.62695,74.36793 -33.62695,93.5293 0,38.32275 50.37092,69.38867 112.50586,69.38867 36.22016,0 99.89287,-12.23494 106.51383,-55.25763 9.84212,-63.95367 -8.85674,-90.84495 -26.34197,-107.71308 -43.39001,-41.85868 -40.7828,-95.93363 -77.47656,-95.72265 z"
+       style="stroke-width:11.6769;stroke-linecap:round;stroke-linejoin:round"
+       d="m 271.9247,158.2987 c -57.20552,0.32891 -41.41695,65.23365 -109.3735,128.41424 -39.74901,36.95546 -45.08652,99.71143 -45.08652,125.40271 0,51.38259 67.53659,93.03532 150.8462,93.03532 48.56346,0 133.9349,-16.40443 142.81218,-74.08862 C 424.31923,345.3142 399.24808,309.25877 375.80414,286.64223 317.62745,230.51872 321.12316,158.01582 271.9247,158.2987 Z"
        sodipodi:nodetypes="sssssss" />
     <ellipse
-       style="fill:#000000;fill-opacity:1;stroke-width:12.8893;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#000000;fill-opacity:1;stroke-width:17.2818;stroke-linecap:round;stroke-linejoin:round"
        id="path13"
-       cx="300.53342"
-       cy="53.536739"
-       rx="19.941053"
-       ry="49.852634"
+       cx="295.14194"
+       cy="6.8747559"
+       rx="26.736671"
+       ry="66.841682"
        transform="rotate(12.839537)" />
   </g>
 </svg>
