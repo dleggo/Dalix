@@ -1,7 +1,6 @@
-- [ ] implement pkg
-	- [ ] install debian package to chroot
-	- [ ] get meta-data
-	- [ ] list folders (and files) to be bind mounted (all packages in the system that do not have conflicts with the package)
+- [x] implement pkg
+	- [x] install debian package to chroot
+	- [x] get meta-data
 	- [ ] launch bwrap with correct options
 		- [ ] Mount base system readonly
 		- [ ] Mount required packages
