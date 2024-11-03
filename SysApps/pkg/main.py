@@ -2,6 +2,7 @@
 
 import os
 import tempfile
+import tomllib
 
 class InvalidPathError(Exception):
 	pass
@@ -18,6 +19,11 @@ class Pkg:
 class App:
 	def __init__(self, path: str):
 		pass
+
+def get_pkg_info(path: str):
+    assert os.path.exists(path), "Package not found!"
+    assert os.path.exist(path + "/pkg-info") # FIXME
+          
 
 # delegates to install_pkg or install_app
 def install(path: str):
