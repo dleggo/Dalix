@@ -47,8 +47,15 @@ def deb_to_pkg_info(info: dict) -> dict:
 		pkg_info["pkg"]["name"] = info["Package"]
 		pkg_info["pkg"]["version"] = info["Version"]
 		pkg_info["pkg"]["arch"] = info["Architecture"]
+		pkg_info["pkg"]["maintainer"] = info["Maintainer"]
+		pkg_info["pkg"]["description"] = info["Description"]
+		if "Depends" in info:
+			pkg_info["pkg"]["dependencies"] = info["Depends"]
+		else:
+			pkg_info["pkg"]["dependencies"] = ""
 	except KeyError:
 		raise ValueError("Invalid debian control file in package!")
+	return pkg_info
 
 # path should point to a .deb file
 def install_deb(path: str, root: str):
@@ -60,6 +67,7 @@ def install_deb(path: str, root: str):
 		os.system(f"dpkg -x {path} {tmpdir}")
 		# extract metadata
 		info = get_deb_info(path)
+		info = deb_to_pkg_info(info)
 		print(info)
 
 if __name__ == "__main__":
