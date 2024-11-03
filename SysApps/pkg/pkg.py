@@ -7,7 +7,7 @@ import toml
 def get_pkg_info(path: str) -> dict:
 	assert os.path.exists(path), "Package not found!"
 	assert os.path.exist(path + "/pkg-info") # FIXME
-	with open(path + "/pkg-info", "rb") as f:
+	with open(path + "/pkg-info", "r") as f:
 		info = toml.load(f)
 	return info
 
@@ -69,7 +69,14 @@ def install_deb(path: str, root: str):
 		info = get_deb_info(path)
 		info = deb_to_pkg_info(info)
 		print(info)
-		os.system(f"cp {tmpdir} {root}/System/Packages")
+		# install package
+		inst_dir = f"{root}/System/Packages/{info["Package"]["Name"]}***{info["Package"]["Version"]}"
+		os.system(f"mkdir -p {inst_dir}")
+		os.system(f"cp -r {tmpdir} {inst_dir}/chroot")
+		# install config
+		os.system(f"touch {inst_dir}/pkg-info")
+		with open(f"{inst_dir}/pkg-info", "w") as info_f:
+			toml.dump(info, info_f)
 
 
 if __name__ == "__main__":
