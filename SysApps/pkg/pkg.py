@@ -18,24 +18,25 @@ def get_deb_info(path: str) -> dict:
 		assert os.path.exists(tmpdir + "/DEBIAN/control"), "No control file found in package!"
 		info_list = [] # contains tuples of (key: str, value: str)
 		with open(tmpdir + "/DEBIAN/control") as control:
-			f = control.read().rstrip()
-			a = f.split("\n")
-			for b in a:
-				if b[0] == " " or b[0] == "\t":
+			file = control.read().rstrip()
+			entry_list = file.split("\n")
+			for entry in entry_list:
+				if entry[0] == " " or entry[0] == "\t":
 					if info_list:
-						info_list[-1] = (info_list[-1][0], info_list[-1][1] + "\n"  + b)
+						info_list[-1] = (info_list[-1][0], info_list[-1][1] + "\n"  + entry)
 					else:
 						raise ValueError("Invalid control file in package!")
 				else:
-					c = b.split(":")
-					assert len(c) == 2, "Invalid control file in package!"
-					key,value = c[0], c[1]
+					entry_split = entry.split(":")
+					entry_split[1] = ''.join(entry_split[1:])
+
+					key,value = entry_split[0:2]
 					key = key.lstrip().rstrip()
 					value = value.lstrip().rstrip()
 					info_list.append((key, value))
 	info = {}
-	for a in info_list:
-		info[a[0]] = a[1]
+	for entry_list in info_list:
+		info[entry_list[0]] = entry_list[1]
 	return info
 
 def deb_to_pkg_info(info: dict) -> dict:
@@ -68,7 +69,6 @@ def install_deb(path: str, root: str):
 		# extract metadata
 		info = get_deb_info(path)
 		info = deb_to_pkg_info(info)
-		print(info)
 		# install package
 		inst_dir = f"{root}/System/Packages/{info["Package"]["Name"]}***{info["Package"]["Version"]}"
 		os.system(f"mkdir -p {inst_dir}")
@@ -81,6 +81,6 @@ def install_deb(path: str, root: str):
 
 if __name__ == "__main__":
 	install_deb(
-		"/home/derek/Code/Dalix/Resources/bwrap.deb",
+		"/home/derek/Code/Dalix/Tests/vscode.deb",
 		"/home/derek/Code/Dalix/Tests/testroot"
 	)
