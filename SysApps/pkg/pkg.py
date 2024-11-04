@@ -3,6 +3,9 @@
 import os
 from tempfile import TemporaryDirectory
 import toml
+from packaging.version import Version
+
+root = ""
 
 def get_pkg_info(path: str) -> dict:
 	assert os.path.exists(path), "Package not found!"
@@ -59,7 +62,9 @@ def deb_to_pkg_info(info: dict) -> dict:
 	return pkg_info
 
 # path should point to a .deb file
-def install_deb(path: str, root: str):
+def install_deb(path: str):
+	global root
+
 	assert os.path.exists(path), "Supplied path does not exist!"
 	assert path.lower()[-4:] == ".deb", "Path does not point to a .deb file!"
 	# create pkg directory
@@ -78,9 +83,43 @@ def install_deb(path: str, root: str):
 		with open(f"{inst_dir}/pkg-info", "w") as info_f:
 			toml.dump(info, info_f)
 
+def get_pkg_list():
+	packages = os.listdir(f"{root}/System/Packages")
+	for pkg in packages:
+		pkg_name = pkg.split("***")
+		if len(pkg_name) != 2:
+			print(f"Corrupt package in system! \"{pkg}\" Skipping for now.")
+			continue
+		pkg_dict = {"Name": pkg_name[0], "Version": Version(pkg_name[1])}
+		yield pkg_dict
+
+def search_pkg_list(name: str, strict=False):
+	global root
+
+	for pkg in get_pkg_list():
+		if strict:
+			if pkg["Name"] == name:
+				yield pkg
+		else:
+			if name in pkg["Name"]:
+				yield name
+
+def get_pkg(name: str):
+	# We try to use the newest version availible to us.
+	candidates = search_pkg_list(name)
+	if not candidates: return None
+	newest = None
+	for candidate in candidates:
+		if newest == None:
+			newest = candidate
+		else:
+			if newest["Version"] < candidate["Version"]:
+				newest = candidate
+	return newest
+
+def run_pkg(name: str) -> int:
+	pass
 
 if __name__ == "__main__":
-	install_deb(
-		"/home/derek/Code/Dalix/Tests/vscode.deb",
-		"/home/derek/Code/Dalix/Tests/testroot"
-	)
+	root = "/home/derek/Code/Dalix/Tests/testroot"
+	install_deb("/home/derek/Code/Dalix/Tests/bwrap0.10.0.deb")

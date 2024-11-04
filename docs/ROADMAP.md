@@ -1,6 +1,8 @@
 - [x] implement pkg
 	- [x] install debian package to chroot
 	- [x] get meta-data
+	- [x] search packages
 	- [ ] launch bwrap with correct options
 		- [ ] Mount base system readonly
 		- [ ] Mount required packages
+	- [ ] Post install scripts
