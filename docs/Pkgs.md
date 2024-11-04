@@ -57,10 +57,12 @@ in an involved process, ```pkg``` calulates ```bwrap``` arguments. This process 
 	--tmp-overlay /
 	...
 ```
- - Then we bind mount the System folder
+ - Then we bind mount the ```System```, ```Users```, and ```Volumes```.
 
  ```
 	--bind /System /System
+	--bind /Users /Users
+	--bind /Volumes /Volumes
  ```
 
  - Then we develop a tree of all the files and folders that need to be symlinked, along with their
@@ -86,6 +88,6 @@ in an involved process, ```pkg``` calulates ```bwrap``` arguments. This process 
 	--mkdir usr/share
 	--symlink /System/Packages/bubblewrap0.11.0/chroot/usr/bin/bwrap /usr/bin/bwrap
 	--symlink /System/Packages/bash5.6.7/chroot/usr/bin/bash /usr/bin/bash
-	--symlink /System/Packages/bash5.6.7/chroot/usr/share/bubblewrap /usr/share/bubblewrap
+	--symlink /System/Packages/bubblewrap0.11.0/chroot/usr/share/bubblewrap /usr/share/bubblewrap
 	--symlink /System/Packages/bash5.6.7/chroot/usr/share/bash /usr/share/bash
 ```

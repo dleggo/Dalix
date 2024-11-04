@@ -62,9 +62,11 @@ Applications are not aware of each other, but packages are.
 ```
 /
 ├── Applications
-	├── LibreOffice
+│	└── LibreOffice
 ├── System
-	├── Packages
-		├── libsqsh***1.2.3
-├── Boot
+│	├── Packages
+│	│	└── libsqsh***1.2.3
+│	└── Config
+└── Volumes
+	└── USB3.0
 ```
