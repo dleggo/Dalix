@@ -49,12 +49,27 @@ etc.
 First, all of the packages are added to a list of needed ones, this prevents recursion issues. Then,
 in an involved process, ```pkg``` calulates ```bwrap``` arguments. This process goes as follows.
 
-- First, We iterate through the packages and add all of their chroots in overlayfs. e.g.
+ - First, We ```overlay``` the base system read-only with a tmpfs overtop so we can bind mount without
+	changing the base system. e.g.
 ```
-	--overlay-src /System/Packages/bash***1.2.3/chroot
-	--overlay-src /System/Packages/git***4.5.6/chroot
-	--overlay-src /System/Packages/libdalix***7.8.9/chroot
-	--overlay-src /System/Packages/qt***6.0.0/chroot
 	...
-	--overlay /System/Packages/pkg***version/chroot tmp/tmp.n1uxv592dx /
+	--overlay-src /
+	--tmp-overlay /
+	...
 ```
+
+ - Then we develop a tree of all the files and folders that need to be symlinked, along with their
+	occurence count. As a bare minimum example.
+
+ ```
+ usr             = 2
+ usr/bin         = 2
+ usr/bin/bwrap   = 1
+ usr/bin/bash    = 1
+ usr/share/bwrap = 1
+ usr/share/bash  = 1
+ ```
+Any files or folders that have an occurence count of 1 can be symlinked. For files with an occurence
+count greater then 1, the file closest to the main package in the dependency tree will be chosen.
+For folders with an occurence count greater then 1, they will be created automatically when the
+contents are symlinked.
