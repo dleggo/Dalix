@@ -57,6 +57,11 @@ in an involved process, ```pkg``` calulates ```bwrap``` arguments. This process 
 	--tmp-overlay /
 	...
 ```
+ - Then we bind mount the System folder
+
+ ```
+	--bind /System /System
+ ```
 
  - Then we develop a tree of all the files and folders that need to be symlinked, along with their
 	occurence count. As a bare minimum example.
@@ -69,7 +74,18 @@ in an involved process, ```pkg``` calulates ```bwrap``` arguments. This process 
  usr/share/bwrap = 1
  usr/share/bash  = 1
  ```
-Any files or folders that have an occurence count of 1 can be symlinked. For files with an occurence
-count greater then 1, the file closest to the main package in the dependency tree will be chosen.
-For folders with an occurence count greater then 1, they will be created automatically when the
-contents are symlinked.
+> Any files or folders that have an occurence count of 1 can be symlinked. For files with an occurence
+> count greater then 1, the file closest to the main package in the dependency tree will be chosen.
+> For folders with an occurence count greater then 1, they will be created automatically when the
+> contents are symlinked.
+ - Then we symlink those. For example
+
+```
+	--mkdir usr
+	--mkdir usr/bin
+	--mkdir usr/share
+	--symlink /System/Packages/bubblewrap0.11.0/chroot/usr/bin/bwrap /usr/bin/bwrap
+	--symlink /System/Packages/bash5.6.7/chroot/usr/bin/bash /usr/bin/bash
+	--symlink /System/Packages/bash5.6.7/chroot/usr/share/bubblewrap /usr/share/bubblewrap
+	--symlink /System/Packages/bash5.6.7/chroot/usr/share/bash /usr/share/bash
+```
