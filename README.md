@@ -4,12 +4,13 @@ like appeal and the plan is that it will use a simplified folder setup that just
 ``` System ```  for important files, ``` Applications ``` for apps, and ``` Users ``` for your files.
 It’s everything you need and nothing that you don’t!
 
-DalixOS’s stability will be clear from the first use. The special file system keeps essential files
-safe, which will let you run multiple app versions without conflict. Installing new software should be a
-breeze. Drop an Application into the ``` Applications ``` folder, and DalixOS should convert it into a
-App-Bundle, installing any dependencies automatically. It’s just like macOS, but without the
-ever-changing compatibility issues! It's everything you need and nothing that you don't! Letting you do
-what you need, without “Un-User-Friendly” package managers!
+DalixOS’s stability will be clear from the first use. The special file system heiarchy keeps essential files
+safe, which will let you run multiple app versions without conflict. Installing new software will be a
+breeze. Drop an Application into the ``` Applications ``` folder, and DalixOS will convert it into a
+App-Bundle, installing any dependencies automatically! It’s just like macOS, but without the
+ever-changing compatibility issues. It's everything you need and nothing that you don't! Letting you do
+what you need, without “Un-User-Friendly” package managers. DalixOS's motto is **The filesystem is the package manager**.
+
 
 DalixOS will also auto clean up unused dependencies so your disk isn’t filled up with unused files!
 
