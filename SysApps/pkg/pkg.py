@@ -75,6 +75,7 @@ def install_deb(path: str):
 		info = get_deb_info(path)
 		info = deb_to_pkg_info(info)
 		# install package
+		# FIXME: make symlinks e.g. /bin -> usr/bin etc.
 		inst_dir = f"{root}/System/Packages/{info["Package"]["Name"]}***{info["Package"]["Version"]}"
 		os.system(f"mkdir -p {inst_dir}")
 		os.system(f"cp -r {tmpdir} {inst_dir}/chroot")
@@ -90,7 +91,11 @@ def get_pkg_list():
 		if len(pkg_name) != 2:
 			print(f"Corrupt package in system! \"{pkg}\" Skipping for now.")
 			continue
-		pkg_dict = {"Name": pkg_name[0], "Version": Version(pkg_name[1])}
+		pkg_dict = {
+			"Name": pkg_name[0],
+			"Version": Version(pkg_name[1]),
+			"Path": pkg
+		}
 		yield pkg_dict
 
 def search_pkg_list(name: str, strict=False):
@@ -106,7 +111,7 @@ def search_pkg_list(name: str, strict=False):
 
 def get_pkg(name: str):
 	# We try to use the newest version availible to us.
-	candidates = search_pkg_list(name)
+	candidates = list(search_pkg_list(name))
 	if not candidates: return None
 	newest = None
 	for candidate in candidates:
@@ -117,8 +122,6 @@ def get_pkg(name: str):
 				newest = candidate
 	return newest
 
-def run_pkg(name: str) -> int:
-	pass
 
 if __name__ == "__main__":
 	root = "/home/derek/Code/Dalix/Tests/testroot"
