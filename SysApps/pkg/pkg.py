@@ -139,11 +139,12 @@ def get_pkg(name: str):
 	return newest
 
 def generate_bwrap_args(deps: list) -> list:
-	"""
-	deps will be in the format of
-		"libsqsh>=1.2.3",
-		"test==1,
-	"""
+	global root
+	args = []
+	args += f"--overlay-src {root}"
+	args += f"--tmp-overlay /"
+	args += f"--bind {root}/System /System"
+	args += f"--bind {root}/Users /Users"
 
 if __name__ == "__main__":
 	root = "/home/derek/Code/Dalix/Tests/testroot"
