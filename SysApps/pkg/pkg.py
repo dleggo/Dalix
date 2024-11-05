@@ -54,12 +54,19 @@ def deb_to_pkg_info(info: dict) -> dict:
 		pkg_info["Package"]["Maintainer"] = info["Maintainer"]
 		pkg_info["Package"]["Description"] = info["Description"]
 		if "Depends" in info:
-			pkg_info["Package"]["Dependencies"] = info["Depends"]
+			deps = info["Depends"]
+			deps = deps.replace(",", "\n").replace("(", "").replace(")", "").replace(" ", "")
+			pkg_info["Package"]["Dependencies"] = deps
 		else:
 			pkg_info["Package"]["Dependencies"] = ""
 	except KeyError:
 		raise ValueError("Invalid debian control file in package!")
 	return pkg_info
+
+def symlink(target, source):
+	os.system(f"mkdir -p {target}")
+	os.system(f"mkdir -p {''.join(source.split("/")[:-1])}")
+	os.system(f"ln -sfT {target} {source}")
 
 # path should point to a .deb file
 def install_deb(path: str):
@@ -75,14 +82,23 @@ def install_deb(path: str):
 		info = get_deb_info(path)
 		info = deb_to_pkg_info(info)
 		# install package
-		# FIXME: make symlinks e.g. /bin -> usr/bin etc.
+
 		inst_dir = f"{root}/System/Packages/{info["Package"]["Name"]}***{info["Package"]["Version"]}"
+
+		if os.path.exists(inst_dir):
+			os.system(f"rm -R {inst_dir}")
 		os.system(f"mkdir -p {inst_dir}")
 		os.system(f"cp -r {tmpdir} {inst_dir}/chroot")
+
+		# TODO: make more symlinks e.g. /bin -> usr/bin etc.
+		root = inst_dir + "/chroot"
+		symlink(f"{root}/bin", f"{root}/usr/bin")
+		symlink(f"{root}/bin", f"{root}/usr/local/bin")
+
 		# install config
 		os.system(f"touch {inst_dir}/pkg-info")
 		with open(f"{inst_dir}/pkg-info", "w") as info_f:
-			toml.dump(info, info_f)
+			info_f.write(toml.dumps(info).replace("\\n", "\n"))
 
 def get_pkg_list():
 	packages = os.listdir(f"{root}/System/Packages")
@@ -122,7 +138,13 @@ def get_pkg(name: str):
 				newest = candidate
 	return newest
 
+def generate_bwrap_args(deps: list) -> list:
+	"""
+	deps will be in the format of
+		"libsqsh>=1.2.3",
+		"test==1,
+	"""
 
 if __name__ == "__main__":
 	root = "/home/derek/Code/Dalix/Tests/testroot"
-	install_deb("/home/derek/Code/Dalix/Tests/bwrap0.10.0.deb")
+	install_deb("/home/derek/Code/Dalix/Tests/vscode.deb")
