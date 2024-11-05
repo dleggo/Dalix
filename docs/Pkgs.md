@@ -91,3 +91,6 @@ in an involved process, ```pkg``` calulates ```bwrap``` arguments. This process 
 	--symlink /System/Packages/bubblewrap0.11.0/chroot/usr/share/bubblewrap /usr/share/bubblewrap
 	--symlink /System/Packages/bash5.6.7/chroot/usr/share/bash /usr/share/bash
 ```
+
+> Potentially, if the cost of preforming the symlinks for every package/application gets to high, a
+> static solution may have to be implemented. For now it will be done for each package/application.
