@@ -63,10 +63,23 @@ def deb_to_pkg_info(info: dict) -> dict:
 		raise ValueError("Invalid debian control file in package!")
 	return pkg_info
 
-def symlink(target, source):
+def symlink(target, source): # FIXME: likely really buggy
 	os.system(f"mkdir -p {target}")
-	os.system(f"mkdir -p {''.join(source.split("/")[:-1])}")
-	os.system(f"ln -sfT {target} {source}")
+	src_full = source
+	source = source.split("/")[:-1]
+	
+	src_str = ""
+	remove = True
+	for src in source:
+		if remove:
+			src_str += src
+			remove = False
+			continue
+		src_str += "/" + src
+	print(src_str)
+	input()
+	os.system(f"mkdir -p {src_str}")
+	os.system(f"ln -sfT {target} {src_full}")
 
 # path should point to a .deb file
 def install_deb(path: str):
