@@ -16,7 +16,7 @@
 9. Be stable
 10. Have understandable folder names
 
-## Dalix will attempt to implement this in the following ways
+## dalixOS will attempt to implement this in the following ways
 1. Making a custom DE
 2. Using AppBundles, and having simple and straight to the point settings
 3. Port Linux apps, and if a user tries to install a .deb file it should automatically generate an AppBundle for it
