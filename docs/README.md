@@ -1,4 +1,4 @@
-# ![Logo](https://github.com/FigSystems/dalixOS/blob/main/Logos/Logo48x48.png?raw=true "Logo") Meet dalixOS!
+# ![Logo](Logo48x48.png "Logo") Meet dalixOS!
 
 An [open-source](https://github.com/FigSystems/dalixOS) project which aims to have a stunning macOS like
 appeal, bringing the macOS like experience to Linux! This is not your traditional Linux distro as it
@@ -9,7 +9,7 @@ We want you to have an almost “Drop-In” replacement for macOS! Below is a li
 
  - **Window button trafic lights**: More of a preference thing, but still nice nonetheless.
 
- - **Dock**: macOS users love their dock, we will be working on implementing that into Dalix.
+ - **Dock**: macOS users love their dock, we will be working on implementing that into dalixOS.
 
  - **Global menu bar**: A global menu bar has been shown to be much faster then a menu bar at the top of the window. dalixOS will be implementing that too.
 
