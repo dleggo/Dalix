@@ -63,23 +63,18 @@ def deb_to_pkg_info(info: dict) -> dict:
 		raise ValueError("Invalid debian control file in package!")
 	return pkg_info
 
-def symlink(target, source): # FIXME: likely really buggy
-	os.system(f"mkdir -p {target}")
-	src_full = source
-	source = source.split("/")[:-1]
-	
-	src_str = ""
-	remove = True
-	for src in source:
-		if remove:
-			src_str += src
-			remove = False
-			continue
-		src_str += "/" + src
-	print(src_str)
-	input()
-	os.system(f"mkdir -p {src_str}")
-	os.system(f"ln -sfT {target} {src_full}")
+def symlink(target_path: str, source_path: str):
+	"""
+	Creates a symbolic link from target_path to source_path.
+
+	Ensures that the directory of target_path exists before creating the symlink.
+	"""
+	target_dir = os.path.dirname(target_path)
+	os.makedirs(target_dir, exist_ok=True)
+
+	relative_path = os.path.relpath(source_path, target_dir)
+	os.symlink(relative_path, target_path)
+
 
 # path should point to a .deb file
 def install_deb(path: str):
@@ -103,10 +98,16 @@ def install_deb(path: str):
 		os.system(f"mkdir -p {inst_dir}")
 		os.system(f"cp -r {tmpdir} {inst_dir}/chroot")
 
-		# TODO: make more symlinks e.g. /bin -> usr/bin etc.
+		# ...
+
 		root = inst_dir + "/chroot"
 		symlink(f"{root}/bin", f"{root}/usr/bin")
 		symlink(f"{root}/bin", f"{root}/usr/local/bin")
+		symlink(f"{root}/sbin", f"{root}/usr/sbin")
+		symlink(f"{root}/lib", f"{root}/usr/lib")
+		symlink(f"{root}/lib64", f"{root}/usr/lib64")
+		symlink(f"{root}/etc", f"{root}/usr/etc")
+		symlink(f"{root}/var", f"{root}/usr/var")
 
 		# install config
 		os.system(f"touch {inst_dir}/pkg-info")
