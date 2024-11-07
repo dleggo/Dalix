@@ -34,8 +34,6 @@ pkg.root = args.root
 if args.install:
 	install_deb(args.install)
 elif args.test:
-	files = list_directory_tree(
-		"/home/derek/Code/dalixOS/Tests/testroot/System/Packages/bubblewrap***0.11.0/chroot"
-	)
-	for file in files:
-		print(file)
+	a = occurence_count(["test", "test", "test", "usr", "usr", "usr/bin", "usr/share", "usr/share"])
+	for b in a:
+		print(f"{b}: {a[b]}")

@@ -2,7 +2,8 @@
 	- [x] install debian package to chroot
 	- [x] get meta-data
 	- [x] search packages
+	- [x] generate occurence count of each folder
 	- [ ] launch bwrap with correct options
 		- [ ] Mount base system readonly
-		- [ ] Mount required packages
+		- [ ] Symlink required packages
 	- [ ] Post install scripts

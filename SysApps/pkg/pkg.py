@@ -247,6 +247,10 @@ def list_directory_tree(path: str) -> list:
 	files.remove(path)
 	return files
 
+# Generate an occurence count of each element in a list
+def occurence_count(l: list) -> dict:
+	return {x: l.count(x) for x in l}
+
 def generate_bwrap_args(deps: list) -> list:
 	"""
 	Generates a list of bubblewrap arguments for setting up the container environment.
