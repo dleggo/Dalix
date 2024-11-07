@@ -78,8 +78,7 @@ in an involved process, ```pkg``` calulates ```bwrap``` arguments. This process 
  ```
 > Any files or folders that have an occurence count of 1 can be symlinked. For files with an occurence
 > count greater then 1, the file closest to the main package in the dependency tree will be chosen.
-> For folders with an occurence count greater then 1, they will be created automatically when the
-> contents are symlinked.
+> For folders with an occurence count greater then 1, they will be created in the argument list
  - Then we symlink those. For example
 
 ```

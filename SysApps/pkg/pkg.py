@@ -270,3 +270,9 @@ def generate_bwrap_args(deps: list) -> list:
 	args += f"--bind {root}/Users /Users"
 	args += f"--bind {root}/Volumes /Volumes"
 
+	# generate list of packages that need to be included
+
+	# generate directory trees of all of them, and merge them together
+
+	# generate mkdirs
+	# generate symlinks
