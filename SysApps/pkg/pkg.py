@@ -234,17 +234,18 @@ def get_pkg(name: str):
 	return newest
 
 def list_directory_tree(path: str) -> list:
-    """
-    Returns a recursive list of all files and directories in the given path.
+	"""
+	Returns a recursive list of all files and directories in the given path.
 
-    :param path: The path to list the directory tree of.
-    :return: A list of all files and directories (recursively) in the given path.
-    """
-    files = []
-    for root, dirs, filenames in os.walk(path):
-        files.append(root)
-        files.extend(os.path.join(root, f) for f in filenames)
-    return files
+	:param path: The path to list the directory tree of.
+	:return: A list of all files and directories (recursively) in the given path.
+	"""
+	files = []
+	for root, dirs, filenames in os.walk(path):
+		files.append(root)
+		files.extend(os.path.join(root, f) for f in filenames)
+	files.remove(path)
+	return files
 
 def generate_bwrap_args(deps: list) -> list:
 	"""
