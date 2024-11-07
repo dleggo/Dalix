@@ -25,6 +25,7 @@ parser.add_argument(
 	'-t',
 	'--test',
 	help='Run a random test script',
+	action='store_true'
 )
 args = parser.parse_args()
 
