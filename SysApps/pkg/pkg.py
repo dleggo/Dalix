@@ -9,6 +9,7 @@ import argparse
 from distutils.dir_util import copy_tree
 
 pkg_info_t = namedtuple('pkg_info_t', ['name', 'version', 'path'])
+dep_info_t = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
 root = ""
 
@@ -259,6 +260,9 @@ def generate_bwrap_args(deps: list) -> list:
 	overlays and bind mounts. The root of the system is mounted as an overlay for the source,
 	and specific directories are bound to their respective locations.
 
+	deps should be passed in a form of
+	["pkg1==2.1.0", "pkg2>=3.2.1", "pkg3<=4.3.2"]
+
 	:param deps: A list of dependencies required for the container.
 	:return: A list of bubblewrap arguments for container setup.
 	"""
@@ -271,6 +275,30 @@ def generate_bwrap_args(deps: list) -> list:
 	args += f"--bind {root}/Volumes /Volumes"
 
 	# generate list of packages that need to be included
+
+	deps_tuples = []
+	for dep in deps:
+		if "==" in dep:
+			comparison = "=="
+		elif ">=" in dep:
+			comparison = ">="
+		elif "<=" in dep:
+			comparison = "<="
+		else:
+			dep_name = dep
+			dep_version = None
+			deps_tuples.append((dep_name, None, dep_version))
+			continue
+
+		dep_name = dep.split(comparison)[0]
+		dep_version = dep.split(comparison)[1]
+		deps_tuples.append((dep_name, comparison, dep_version))
+
+	for dep in deps_tuples:
+		pkgs = search_pkg_list(dep)
+		for pkg in pkgs:
+			pass # TODO
+
 
 	# generate directory trees of all of them, and merge them together
 
