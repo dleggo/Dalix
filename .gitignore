@@ -2,3 +2,4 @@ Tests
 Test/*
 External
 External/*
+**/__pycache__
