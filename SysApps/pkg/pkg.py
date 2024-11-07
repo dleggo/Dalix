@@ -96,19 +96,17 @@ def deb_to_pkg_info(info: dict) -> dict:
 
 def symlink(src: str, dst: str):
 	"""
-	Creates a symbolic link from src to dst.
+	Creates a symbolic link from src to dst. dst is what gets created.
 
 	Ensures that the directory of dest exists before creating the symlink.
 	"""
-	print(f"src: {src} dst: {dst}")
-	src_dir = os.path.dirname(src)
-	os.makedirs(src_dir, exist_ok=True)
+	os.makedirs(src, exist_ok=True)
 
-	# dst_dir = os.path.dirname(dst)
-	os.makedirs(dst, exist_ok=True)
+	dst_dir = os.path.dirname(dst)
+	os.makedirs(dst_dir, exist_ok=True)
 
 	# relative_path = os.path.relpath(source_path, target_dir)
-	os.symlink(dst, src, target_is_directory=os.path.isdir(src))
+	os.symlink(src, dst, target_is_directory=os.path.isdir(src))
 
 
 # path should point to a .deb file
@@ -149,13 +147,13 @@ def install_deb(path: str):
 		os.system(f"cp -r {tmpdir} {inst_dir}/chroot")
 
 		chroot = inst_dir + "/chroot"
-		symlink(f"{chroot}/bin", f"{chroot}/usr/bin")
-		symlink(f"{chroot}/usr/local/bin", f"{chroot}/usr/bin")
-		symlink(f"{chroot}/sbin", f"{chroot}/usr/sbin")
-		symlink(f"{chroot}/lib", f"{chroot}/usr/lib")
-		symlink(f"{chroot}/lib64", f"{chroot}/usr/lib64")
-		symlink(f"{chroot}/etc", f"{chroot}/usr/etc")
-		symlink(f"{chroot}/var", f"{chroot}/usr/var")
+		symlink(f"{chroot}/usr/bin", f"{chroot}/bin")
+		symlink(f"{chroot}/usr/bin", f"{chroot}/usr/local/bin")
+		symlink(f"{chroot}/usr/sbin", f"{chroot}/sbin")
+		symlink(f"{chroot}/usr/lib", f"{chroot}/lib")
+		symlink(f"{chroot}/usr/lib64", f"{chroot}/lib64")
+		symlink(f"{chroot}/usr/etc", f"{chroot}/etc")
+		symlink(f"{chroot}/usr/var", f"{chroot}/var")
 
 		# install config
 		os.system(f"touch {inst_dir}/pkg-info")
