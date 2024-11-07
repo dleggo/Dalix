@@ -1,3 +1,6 @@
+#!/bin/python3
+
+import argparse
 from pkg import *
 import pkg
 import sys

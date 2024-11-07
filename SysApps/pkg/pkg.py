@@ -6,6 +6,7 @@ import toml
 from packaging.version import Version
 from collections import namedtuple
 import argparse
+from distutils.dir_util import copy_tree
 
 pkg_info_t = namedtuple('pkg_info_t', ['name', 'version', 'path'])
 
@@ -145,8 +146,8 @@ def install_deb(path: str):
 		if os.path.exists(inst_dir):
 			os.system(f"rm -R {inst_dir}")
 		os.system(f"mkdir -p {inst_dir}")
-		os.system(f"cp -r {tmpdir} {inst_dir}/chroot")
 
+		# create symlinks
 		chroot = inst_dir + "/chroot"
 		symlink(f"{chroot}/usr/bin", f"{chroot}/bin")
 		symlink(f"{chroot}/usr/bin", f"{chroot}/usr/local/bin")
@@ -155,6 +156,9 @@ def install_deb(path: str):
 		symlink(f"{chroot}/usr/lib64", f"{chroot}/lib64")
 		symlink(f"{chroot}/usr/etc", f"{chroot}/etc")
 		symlink(f"{chroot}/usr/var", f"{chroot}/var")
+
+		# os.system(f"cp -Ra {tmpdir}/. {inst_dir}/chroot")
+		copy_tree(tmpdir, f"{inst_dir}/chroot")
 
 		# install config
 		os.system(f"touch {inst_dir}/pkg-info")
