@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 import toml
 from packaging.version import Version
 from collections import namedtuple
+import argparse
 
 pkg_info_t = namedtuple('pkg_info_t', ['name', 'version', 'path'])
 
@@ -228,18 +229,18 @@ def get_pkg(name: str):
 				newest = candidate
 	return newest
 
-def list_directory_tree(path: str):
-	"""
-	Returns a recursive list of all files and directories in the given path.
+def list_directory_tree(path: str) -> list:
+    """
+    Returns a recursive list of all files and directories in the given path.
 
-	:param path: The path to list the directory tree of.
-	:return: A list of all files and directories (recursively) in the given path.
-	"""
-	files = os.listdir(path)
-	for f in files:
-		if os.path.isdir(path + "/" + f):
-			files += list_directory_tree(path + "/" + f)
-	return files
+    :param path: The path to list the directory tree of.
+    :return: A list of all files and directories (recursively) in the given path.
+    """
+    files = []
+    for root, dirs, filenames in os.walk(path):
+        files.append(root)
+        files.extend(os.path.join(root, f) for f in filenames)
+    return files
 
 def generate_bwrap_args(deps: list) -> list:
 	"""
@@ -262,8 +263,38 @@ def generate_bwrap_args(deps: list) -> list:
 
 
 if __name__ == "__main__":
-	root = "/home/derek/Code/dalixOS/Tests/testroot"
-	# install_deb("/home/derek/Code/dalixOS/Tests/vscode.deb")
-	print(list_directory_tree(
-		"/home/derek/Code/dalixOS/Tests/testroot/System/Packages/bubblewrap***0.11.0/chroot"
-	))
+	parser = argparse.ArgumentParser(description='Your script description')
+	parser.add_argument(
+		'-p',
+		'--path',
+		help='Path to list directory tree of',
+		required=True
+	)
+	parser.add_argument(
+		'-r',
+		'--root',
+		help='Root directory of the system',
+		default='/home/derek/Code/dalixOS/Tests/testroot'
+	)
+	parser.add_argument(
+		'-i',
+		'--install',
+		help='Install a .deb package',
+	)
+	parser.add_argument(
+		'-t',
+		'--test',
+		help='Run a random test script',
+	)
+	args = parser.parse_args()
+
+	root = args.root
+
+	if args.install:
+		install_deb(args.install)
+	elif args.test:
+		files = list_directory_tree(
+			"/home/derek/Code/dalixOS/Tests/testroot/System/Packages/bubblewrap***0.11.0/chroot"
+		)
+		for file in files:
+			print(file)
