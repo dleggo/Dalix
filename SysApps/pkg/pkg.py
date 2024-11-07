@@ -228,6 +228,19 @@ def get_pkg(name: str):
 				newest = candidate
 	return newest
 
+def list_directory_tree(path: str):
+	"""
+	Returns a recursive list of all files and directories in the given path.
+
+	:param path: The path to list the directory tree of.
+	:return: A list of all files and directories (recursively) in the given path.
+	"""
+	files = os.listdir(path)
+	for f in files:
+		if os.path.isdir(path + "/" + f):
+			files += list_directory_tree(path + "/" + f)
+	return files
+
 def generate_bwrap_args(deps: list) -> list:
 	"""
 	Generates a list of bubblewrap arguments for setting up the container environment.
@@ -245,7 +258,12 @@ def generate_bwrap_args(deps: list) -> list:
 	args += f"--tmp-overlay /"
 	args += f"--bind {root}/System /System"
 	args += f"--bind {root}/Users /Users"
+	args += f"--bind {root}/Volumes /Volumes"
+
 
 if __name__ == "__main__":
 	root = "/home/derek/Code/dalixOS/Tests/testroot"
-	install_deb("/home/derek/Code/dalixOS/Tests/vscode.deb")
+	# install_deb("/home/derek/Code/dalixOS/Tests/vscode.deb")
+	print(list_directory_tree(
+		"/home/derek/Code/dalixOS/Tests/testroot/System/Packages/bubblewrap***0.11.0/chroot"
+	))
