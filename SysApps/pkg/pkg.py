@@ -2,11 +2,12 @@
 
 import os
 from tempfile import TemporaryDirectory
-import toml
+import tomllib
+import tomli_w
 from packaging.version import Version
 from collections import namedtuple
 import argparse
-from distutils.dir_util import copy_tree # type: ignore
+from shutil import copytree
 
 # Dependency = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
@@ -35,7 +36,7 @@ class Package:
 		assert os.path.exists(path), "Package not found!"
 		assert os.path.exists(path + "/pkg-info")
 		with open(path + "/pkg-info", "r") as f:
-			info = toml.load(f)
+			info = tomllib.load(f)
 		return info
 
 	def get_dependencies(path: str) -> list:
@@ -67,6 +68,8 @@ class Dependency:
 
 	def satisfied_by(self, version: Version) -> bool:
 		if self.comparison == "==":
+			return self.version == version
+		elif self.comparison == "=":
 			return self.version == version
 		elif self.comparison == ">=":
 			return self.version <= version
@@ -206,12 +209,22 @@ def install_deb(path: str):
 		symlink(f"{chroot}/usr/var", f"{chroot}/var")
 
 		# os.system(f"cp -Ra {tmpdir}/. {inst_dir}/chroot")
-		copy_tree(tmpdir, f"{inst_dir}/chroot")
+		copytree(
+			tmpdir,
+			f"{inst_dir}/chroot",
+			symlinks=True,
+			dirs_exist_ok=True
+		)
 
 		# install config
 		os.system(f"touch {inst_dir}/pkg-info")
 		with open(f"{inst_dir}/pkg-info", "w") as info_f:
-			info_f.write(toml.dumps(info).replace("\\n", "\n"))
+			info_f.write(
+				tomli_w.dumps(
+					info,
+					multiline_strings=True
+				),
+			)
 
 def get_pkg_list():
 	"""
@@ -391,11 +404,15 @@ def generate_bwrap_args(deps: list) -> list:
 	# Get list of packages from list of dependencies
 	deps = deps_to_pkgs(deps_info)
 
-	for dep in deps:
-		print(dep)
-
-
 	# generate directory trees of all of them, and merge them together
+	directories = []
+	for dep in deps:
+		directory = os.path.join(dep.path, "chroot")
+		dep_dirs = list_directory_tree(directory)
+		for dep_dir in dep_dirs:
+			directories.append(dep_dir[len(directory):]) # "removes down the common prefix"
+
+
 
 	# generate mkdirs
 	# generate symlinks

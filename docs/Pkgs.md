@@ -32,7 +32,7 @@ which can span multiple lines.
 '''
 
 Dependencies = '''
-libsqsh==1.2.3
+libsqsh=1.2.3
 python>=3.10
 joy
 happiness
