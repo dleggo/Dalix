@@ -8,8 +8,7 @@ from collections import namedtuple
 import argparse
 from distutils.dir_util import copy_tree # type: ignore
 
-# potentially migrate to pkg class in the future
-dep_info_t = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
+# Dependency = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
 root = ""
 
@@ -51,10 +50,34 @@ class Package:
 		:raises AssertionError: If the package directory or pkg-info file does not exist.
 		"""
 		info = Package.get_info(path)
-		# FIXME
+		# TODO
 
 	def __repr__(self):
 		return f"Pkg({self.name}, {self.version}, {self.path})"
+
+class Dependency:
+	def __init__(self, name: str, comparison: str, version: Version):
+		self.name = name
+		self.comparison = comparison
+		assert comparison in ["==", ">=", "<=", ">", "<", None], "Invalid comparison operator!"
+		if type(version) == str:
+			self.version = Version(version)
+		else:
+			self.version = version
+
+	def satisfied_by(self, version: Version) -> bool:
+		if self.comparison == "==":
+			return self.version == version
+		elif self.comparison == ">=":
+			return self.version <= version
+		elif self.comparison == "<=":
+			return self.version >= version
+		elif self.comparison == ">":
+			return self.version < version
+		elif self.comparison == "<":
+			return self.version > version
+		else: # comparison == None
+			return True
 
 def get_deb_info(path: str) -> dict:
 	"""
@@ -271,7 +294,7 @@ def list_directory_tree(path: str) -> list:
 def occurence_count(l: list) -> dict:
 	return {x: l.count(x) for x in l}
 
-def parse_dep(dep: str) -> dep_info_t:
+def parse_dep(dep: str) -> Dependency:
 	"""
 	Parses a dependency string and returns a dep_info_t representing the parsed dependency.
 
@@ -291,11 +314,11 @@ def parse_dep(dep: str) -> dep_info_t:
 		comparison = "<="
 	else:
 		dep_name = dep
-		return dep_info_t(dep_name, None, None)
+		return Dependency(dep_name, None, None)
 
 	dep_name = dep.split(comparison)[0]
 	dep_version = dep.split(comparison)[1]
-	return dep_info_t(dep_name, comparison, dep_version)
+	return Dependency(dep_name, comparison, dep_version)
 
 def get_deps_info(deps: list) -> list:
 	"""
@@ -329,45 +352,12 @@ def deps_to_pkgs(deps_info: list) -> list:
 		pkgs = list(search_pkg_list(dep.name, strict=True))
 		if not pkgs:
 			raise ValueError(f"Could not find dependency \"{dep.name}\"")
-		if dep.comparison == "==":
-			for pkg in pkgs:
-				if pkg.version == dep.version:
-					pkg_deps.append(pkg)
-					break
-			else:
-				raise ValueError(
-					f"Could not find dependency {dep.name}{dep.comparison}{dep.version}"
-				)
-			# print("nuthing...")
-		elif dep.comparison == ">=":
-			newest = None
-			for pkg in pkgs:
-				if newest == None:
-					if dep.version <= pkg.version:
-						newest = pkg
-				else:
-					if newest.version < pkg.version:
-						newest = pkg
-			if newest == None:
-				raise ValueError(f"Could not find dependency \"{dep.name}\"")
-			pkg_deps.append(newest)
-		elif dep.comparison == "<=":
-			newest = None
-			for pkg in pkgs:
-				if newest == None:
-					if dep.version >= pkg.version:
-						newest = pkg
-				else:
-					if dep.version > pkg.version and newest.version < pkg.version:
-						newest = pkg
-			if newest == None:
-				raise ValueError(f"Could not find dependency \"{dep.name}\"")
-			pkg_deps.append(newest)
-		else:
-			newest = get_pkg(dep.name)
-			if newest == None:
-				raise ValueError(f"Could not find dependency \"{dep.name}\"")
-			pkg_deps.append(newest)
+
+		best = pkgs[0]
+		for pkg in pkgs:
+			if pkg.version > best.version and dep.satisfied_by(pkg.version):
+				best = pkg
+		pkg_deps.append(best)
 
 	return pkg_deps
 
