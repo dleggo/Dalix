@@ -34,8 +34,7 @@ pkg.root = args.root
 if args.install:
 	install_deb(args.install)
 elif args.test:
-	args = generate_bwrap_args("bash",
-		[
+	args = generate_bwrap_args([
 		"bubblewrap>=0.10.0",
 		"bubblewrap",
 		"bubblewrap==0.10.0-1",

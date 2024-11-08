@@ -9,37 +9,52 @@ import argparse
 from distutils.dir_util import copy_tree # type: ignore
 
 # potentially migrate to pkg class in the future
-pkg_info_t = namedtuple('pkg_info_t', ['name', 'version', 'path'])
 dep_info_t = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
 root = ""
 
-class Pkg:
-	def __init__(self, name, version, path):
+class Package:
+	def __init__(self, name: str, version: Version, path: str):
+		assert os.path.exists(path), "Package not found!"
+		assert os.path.exists(path + "/pkg-info")
 		self.name = name
 		self.version = version
 		self.path = path
 
+	def get_info(path: str) -> dict:
+		"""
+		Reads and returns package metadata from a pkg-info file.
+
+		This function asserts the existence of a package directory and its pkg-info file,
+		then loads the metadata from the pkg-info file using the TOML format and returns
+		it as a dictionary.
+
+		:param path: The path to the package directory containing the pkg-info file.
+		:return: A dictionary containing the package metadata.
+		:raises AssertionError: If the package directory or pkg-info file does not exist.
+		"""
+		assert os.path.exists(path), "Package not found!"
+		assert os.path.exists(path + "/pkg-info")
+		with open(path + "/pkg-info", "r") as f:
+			info = toml.load(f)
+		return info
+
+	def get_dependencies(path: str) -> list:
+		"""
+		Returns a list of dependencies for the package.
+
+		This function reads the dependencies from the pkg-info file and returns
+		a list of packages that the package depends on.
+
+		:param path: The path to the package directory containing the pkg-info file.
+		:return: A list of packages that the package depends on.
+		:raises AssertionError: If the package directory or pkg-info file does not exist.
+		"""
+		info = Package.get_info(path)
+		# FIXME
+
 	def __repr__(self):
 		return f"Pkg({self.name}, {self.version}, {self.path})"
-
-def get_pkg_info(path: str) -> dict:
-	"""
-	Reads and returns package metadata from a pkg-info file.
-
-	This function asserts the existence of a package directory and its pkg-info file,
-	then loads the metadata from the pkg-info file using the TOML format and returns
-	it as a dictionary.
-
-	:param path: The path to the package directory containing the pkg-info file.
-	:return: A dictionary containing the package metadata.
-	:raises AssertionError: If the package directory or pkg-info file does not exist.
-	"""
-	assert os.path.exists(path), "Package not found!"
-	assert os.path.exist(path + "/pkg-info") # FIXME
-	with open(path + "/pkg-info", "r") as f:
-		info = toml.load(f)
-	return info
 
 def get_deb_info(path: str) -> dict:
 	"""
@@ -177,12 +192,7 @@ def install_deb(path: str):
 
 def get_pkg_list():
 	"""
-	Yields a dictionary of package metadata for each package in the system.
-
-	Each dictionary returned has the following keys:
-		- Name: The name of the package.
-		- Version: A `packaging.version.Version` object representing the package version.
-		- Path: The path to the package directory.
+	Yields a list of all packages in the system.
 	"""
 	packages = os.listdir(f"{root}/System/Packages")
 	for pkg in packages:
@@ -190,10 +200,10 @@ def get_pkg_list():
 		if len(pkg_name) != 2:
 			print(f"Corrupt package in system! \"{pkg}\" Skipping for now.")
 			continue
-		pkg_ret = pkg_info_t(
+		pkg_ret = Package(
 			pkg_name[0],
-			pkg_name[1],
-			pkg
+			Version(pkg_name[1]),
+			f"{root}/System/Packages/{pkg}"
 		)
 		yield pkg_ret
 
@@ -361,7 +371,7 @@ def deps_to_pkgs(deps_info: list) -> list:
 
 	return pkg_deps
 
-def generate_bwrap_args(pkg: pkg_info_t, deps: list) -> list:
+def generate_bwrap_args(deps: list) -> list:
 	"""
 	Generates a list of bubblewrap arguments for setting up the container environment.
 
