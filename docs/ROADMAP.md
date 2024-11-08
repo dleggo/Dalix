@@ -3,6 +3,9 @@
 	- [x] get meta-data
 	- [x] search packages
 	- [x] generate occurence count of each folder
+	- [ ] migrate to using classes for both Dependency and Package
+		- [ ] Package
+		- [ ] Dependency
 	- [ ] launch bwrap with correct options
 		- [ ] Mount base system readonly
 		- [ ] Symlink required packages
