@@ -8,6 +8,7 @@ from collections import namedtuple
 import argparse
 from distutils.dir_util import copy_tree
 
+# potentially migrate to pkg class in the future
 pkg_info_t = namedtuple('pkg_info_t', ['name', 'version', 'path'])
 dep_info_t = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
@@ -293,13 +294,19 @@ def deps_to_pkgs(deps_info: list) -> list:
 	pkg_deps = []
 
 	for dep in deps_info:
-		pkgs = search_pkg_list(dep.name, strict=True)
+		pkgs = list(search_pkg_list(dep.name, strict=True))
 		if not pkgs:
 			raise ValueError(f"Could not find dependency \"{dep.name}\"")
 		if dep.comparison == "==":
 			for pkg in pkgs:
 				if pkg.version == dep.version:
 					pkg_deps.append(pkg)
+					break
+			else:
+				raise ValueError(
+					f"Could not find dependency {dep.name}{dep.comparison}{dep.version}"
+				)
+			# print("nuthing...")
 		elif dep.comparison == ">=":
 			newest = None
 			for pkg in pkgs:
@@ -332,7 +339,7 @@ def deps_to_pkgs(deps_info: list) -> list:
 
 	return pkg_deps
 
-def generate_bwrap_args(deps: list) -> list:
+def generate_bwrap_args(pkg: pkg_info_t, deps: list) -> list:
 	"""
 	Generates a list of bubblewrap arguments for setting up the container environment.
 

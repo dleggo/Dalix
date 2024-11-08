@@ -40,8 +40,9 @@ happiness
 love
 etc.
 '''
+```
 
 Bubblewrap 0.11.0 supports overlaying FSs. As of writing stable debian only has 0.8.0, so we must provide this seperatly.
 
-In an AppBundle ```AppRun``` Can bea link to an executable, a shell file, or a script with a
+In an AppBundle ```AppRun``` Can bee link to an executable, a shell file, or a script with a
 proper shebang.
