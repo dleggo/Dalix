@@ -34,6 +34,11 @@ pkg.root = args.root
 if args.install:
 	install_deb(args.install)
 elif args.test:
-	a = occurence_count(["test", "test", "test", "usr", "usr", "usr/bin", "usr/share", "usr/share"])
-	for b in a:
-		print(f"{b}: {a[b]}")
+	args = generate_bwrap_args([
+		"bubblewrap>=0.10.0",
+		"bubblewrap",
+		"bubblewrap==0.10.0",
+		"bubblewrap<=0.11.0"
+	])
+	for arg in args:
+		print(arg)
