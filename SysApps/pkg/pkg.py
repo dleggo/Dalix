@@ -6,13 +6,22 @@ import toml
 from packaging.version import Version
 from collections import namedtuple
 import argparse
-from distutils.dir_util import copy_tree
+from distutils.dir_util import copy_tree # type: ignore
 
 # potentially migrate to pkg class in the future
 pkg_info_t = namedtuple('pkg_info_t', ['name', 'version', 'path'])
 dep_info_t = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
 root = ""
+
+class Pkg:
+	def __init__(self, name, version, path):
+		self.name = name
+		self.version = version
+		self.path = path
+
+	def __repr__(self):
+		return f"Pkg({self.name}, {self.version}, {self.path})"
 
 def get_pkg_info(path: str) -> dict:
 	"""
@@ -252,6 +261,32 @@ def list_directory_tree(path: str) -> list:
 def occurence_count(l: list) -> dict:
 	return {x: l.count(x) for x in l}
 
+def parse_dep(dep: str) -> dep_info_t:
+	"""
+	Parses a dependency string and returns a dep_info_t representing the parsed dependency.
+
+	The dep_info_t structure has the following fields:
+		- name: The name of the package.
+		- comparison: The comparison operator used in the dependency string.
+		- version: The version of the package.
+
+	For example, if given the input "pkg1>=2.1.0", the output will be:
+		dep_info_t("pkg1", ">=", "2.1.0")
+	"""
+	if "==" in dep:
+		comparison = "=="
+	elif ">=" in dep:
+		comparison = ">="
+	elif "<=" in dep:
+		comparison = "<="
+	else:
+		dep_name = dep
+		return dep_info_t(dep_name, None, None)
+
+	dep_name = dep.split(comparison)[0]
+	dep_version = dep.split(comparison)[1]
+	return dep_info_t(dep_name, comparison, dep_version)
+
 def get_deps_info(deps: list) -> list:
 	"""
 	Parses a list of dependencies and returns a
@@ -273,20 +308,7 @@ def get_deps_info(deps: list) -> list:
 	"""
 	deps_info = []
 	for dep in deps:
-		if "==" in dep:
-			comparison = "=="
-		elif ">=" in dep:
-			comparison = ">="
-		elif "<=" in dep:
-			comparison = "<="
-		else:
-			dep_name = dep
-			deps_info.append(dep_info_t(dep_name, None, None))
-			continue
-
-		dep_name = dep.split(comparison)[0]
-		dep_version = dep.split(comparison)[1]
-		deps_info.append(dep_info_t(dep_name, comparison, dep_version))
+		deps_info.append(parse_dep(dep))
 
 	return deps_info
 
