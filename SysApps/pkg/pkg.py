@@ -251,6 +251,87 @@ def list_directory_tree(path: str) -> list:
 def occurence_count(l: list) -> dict:
 	return {x: l.count(x) for x in l}
 
+def get_deps_info(deps: list) -> list:
+	"""
+	Parses a list of dependencies and returns a
+	list of dep_info_t representing the parsed dependencies.
+
+	The dep_info_t structure has the following fields:
+		- name: The name of the package.
+		- comparison: The comparison operator used in the dependency string.
+		- version: The version of the package.
+
+	For example, if given the input ["pkg1>=2.1.0", "pkg2==3.2.1", "pkg3<=4.3.2", "pkg4"],
+	the output will be:
+	[
+		dep_info_t("pkg1", ">=", "2.1.0"),
+		dep_info_t("pkg2", "==", "3.2.1"),
+		dep_info_t("pkg3", "<=", "4.3.2"),
+		dep_info_t("pkg4", None, None)
+	]
+	"""
+	deps_info = []
+	for dep in deps:
+		if "==" in dep:
+			comparison = "=="
+		elif ">=" in dep:
+			comparison = ">="
+		elif "<=" in dep:
+			comparison = "<="
+		else:
+			dep_name = dep
+			deps_info.append(dep_info_t(dep_name, None, None))
+			continue
+
+		dep_name = dep.split(comparison)[0]
+		dep_version = dep.split(comparison)[1]
+		deps_info.append(dep_info_t(dep_name, comparison, dep_version))
+
+	return deps_info
+
+def deps_to_pkgs(deps_info: list) -> list:
+	pkg_deps = []
+
+	for dep in deps_info:
+		pkgs = search_pkg_list(dep.name, strict=True)
+		if not pkgs:
+			raise ValueError(f"Could not find dependency \"{dep.name}\"")
+		if dep.comparison == "==":
+			for pkg in pkgs:
+				if pkg.version == dep.version:
+					pkg_deps.append(pkg)
+		elif dep.comparison == ">=":
+			newest = None
+			for pkg in pkgs:
+				if newest == None:
+					if dep.version <= pkg.version:
+						newest = pkg
+				else:
+					if newest.version < pkg.version:
+						newest = pkg
+			if newest == None:
+				raise ValueError(f"Could not find dependency \"{dep.name}\"")
+			pkg_deps.append(newest)
+		elif dep.comparison == "<=":
+			newest = None
+			for pkg in pkgs:
+				if newest == None:
+					if dep.version >= pkg.version:
+						newest = pkg
+				else:
+					if dep.version > pkg.version and newest.version < pkg.version:
+						newest = pkg
+			if newest == None:
+				raise ValueError(f"Could not find dependency \"{dep.name}\"")
+			pkg_deps.append(newest)
+		else:
+			newest = get_pkg(dep.name)
+			if newest == None:
+				raise ValueError(f"Could not find dependency \"{dep.name}\"")
+			pkg_deps.append(newest)
+
+	return pkg_deps
+
 def generate_bwrap_args(deps: list) -> list:
 	"""
 	Generates a list of bubblewrap arguments for setting up the container environment.
@@ -275,67 +356,14 @@ def generate_bwrap_args(deps: list) -> list:
 
 	# generate list of packages that need to be included
 
-	pkg_deps = []
-
 	# Parse list of dependencies
-	deps_info = []
-	for dep in deps:
-		if "==" in dep:
-			comparison = "=="
-		elif ">=" in dep:
-			comparison = ">="
-		elif "<=" in dep:
-			comparison = "<="
-		else:
-			dep_name = dep
-			deps_info.append(dep_info_t(dep_name, None, None))
-			continue
-
-		dep_name = dep.split(comparison)[0]
-		dep_version = dep.split(comparison)[1]
-		deps_info.append(dep_info_t(dep_name, comparison, dep_version))
+	deps_info = get_deps_info(deps)
 
 	# Get list of packages from list of dependencies
-	for dep in deps_info:
-		pkgs = search_pkg_list(dep.name, strict=True)
-		if not pkgs:
-			raise ValueError(f"Could not find dependency \"{dep.name}\"")
-		if dep.comparison == "==":
-			for pkg in pkgs:
-				if pkg.version == dep.version:
-					pkg_deps.append(pkg)
-		elif dep.comparison == ">=":
-			newest = None
-			for pkg in pkgs:
-				if newest == None:
-					if dep.version < pkg.version:
-						newest = pkg
-				else:
-					if dep.version < pkg.version:
-						newest = pkg
-			if newest == None:
-				raise ValueError(f"Could not find dependency \"{dep.name}\"")
-			pkg_deps.append(newest)
-		elif dep.comparison == "<=":
-			newest = None
-			for pkg in pkgs:
-				if newest == None:
-					if dep.version > pkg.version:
-						newest = pkg
-				else:
-					if dep.version > pkg.version:
-						newest = pkg
-			if newest == None:
-				raise ValueError(f"Could not find dependency \"{dep.name}\"")
-			pkg_deps.append(newest)
-		else:
-			newest = get_pkg(dep.name)
-			if newest == None:
-				raise ValueError(f"Could not find dependency \"{dep.name}\"")
-			pkg_deps.append(newest)
+	deps = deps_to_pkgs(deps_info)
 
-	for pkg_dep in pkg_deps:
-		print(pkg_dep)
+	for dep in deps:
+		print(dep)
 
 
 	# generate directory trees of all of them, and merge them together
