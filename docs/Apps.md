@@ -18,15 +18,17 @@ For an example package of LibreOffice
 # ./info
 
 # currently only type 1 description files are supported.
-info-type = 1
+InfoType = 1
 
 # Neccesary fields
-[main]
+[App]
 
-name = "Your App Name"
-version = "4.5.6.7"
-developer = "You/Your company's name"
-description = '''
+Name = "Your App Name"
+Version = "4.5.6.7"
+Maintainer = "You/Your company's name"
+# Arch can be any arch in the form of Debians arch field e.g. amd64 arm64 i386 etc.
+Arch = "any"
+Description = '''
 The first line is the short description.
 All the other lines are a description
 which can span multiple lines.

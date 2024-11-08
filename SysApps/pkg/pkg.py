@@ -82,6 +82,12 @@ class Dependency:
 		else: # comparison == None
 			return True
 
+class BwrapItem:
+	def __init__(self, path: str, mountpoint: str, directory: bool):
+		self.path = path
+		self.mountpoint = mountpoint
+		self.directory = directory
+
 def get_deb_info(path: str) -> dict:
 	"""
 	Extracts metadata from a .deb package.
@@ -405,12 +411,13 @@ def generate_bwrap_args(deps: list) -> list:
 	deps = deps_to_pkgs(deps_info)
 
 	# generate directory trees of all of them, and merge them together
-	directories = []
+	contents = []
 	for dep in deps:
 		directory = os.path.join(dep.path, "chroot")
 		dep_dirs = list_directory_tree(directory)
 		for dep_dir in dep_dirs:
-			directories.append(dep_dir[len(directory):]) # "removes down the common prefix"
+			directories.append(dep_dir[len(directory):]) # removes down the common prefix
+	print(directories)
 
 
 
