@@ -304,8 +304,7 @@ def list_directory_tree(path: str) -> list:
 	return files
 
 # Generate an occurence count of each element in a list
-def occurence_count(l: list) -> dict:
-	return {x: l.count(x) for x in l}
+
 
 def parse_dep(dep: str) -> Dependency:
 	"""
@@ -416,6 +415,7 @@ def get_files_and_directories_from_deps(deps: list) -> list:
 	directories_bwrap_locations = [x.bwrap_loc for x in directories]
 	files_bwrap_locations = [x.bwrap_loc for x in files]
 
+	# FIXME: This generates occurences within a packages files...
 	dirs_occ = occurence_count(directories_bwrap_locations)
 	files_occ = occurence_count(files_bwrap_locations)
 
@@ -427,8 +427,9 @@ def get_files_and_directories_from_deps(deps: list) -> list:
 
 	return files, directories
 
-def occurence_count_item_t(l: list) -> dict:
+def occurence_count(l: list) -> dict:
 	return {x: l.count(x) for x in l}
+
 
 def generate_bwrap_args(deps: list) -> list:
 	"""
@@ -477,12 +478,13 @@ def generate_bwrap_args(deps: list) -> list:
 			# Everything is mounted within / so we don't have to worry about root inside the
 			# container. But outside of the container we do. therfore, src_path must be to
 			# inside /System/Packages not {root}/System/Package.
-			for sym in symlinked:
-				if dir.bwrap_loc.startswith(sym):
-					continue # Farther root path is already symlinked
+			# for sym in symlinked:
+			# 	if dir.bwrap_loc.startswith(sym):
+			# 		continue # Farther root path is already symlinked
+			# TODO: OPTIMIZEME
 			src_path = dir.fullpath[len(root):]
 			args.append(f"--symlink {dir.bwrap_loc} {src_path}")
-			symlinked.append(dir.bwrap_loc)
+			# symlinked.append(dir.bwrap_loc)
 		elif dir.occurences > 1:
 			args.append(f"--mkdir {dir.bwrap_loc}")
 
@@ -491,7 +493,17 @@ def generate_bwrap_args(deps: list) -> list:
 	# if occurence count > 1, only the file closest to the main package will be symlinked
 
 	for file in files:
-		pass
+		if file.occurences == 1:
+			# Everything is mounted within / so we don't have to worry about root inside the
+			# container. But outside of the container we do. therfore, src_path must be to
+			# inside /System/Packages not {root}/System/Package.
+			src_path = file.fullpath[len(root):]
+			args.append(f"--symlink {file.bwrap_loc} {src_path}")
+		elif file.occurences > 1:
+			# This should never happen...
+			# but since it obviously did, we'lle just ignore it and hope for the best
+			src_path = file.fullpath[len(root):]
+			args.append(f"--symlink {file.bwrap_loc} {src_path}")
 
 
 
