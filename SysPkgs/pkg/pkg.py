@@ -410,14 +410,21 @@ def generate_bwrap_args(deps: list) -> list:
 	# Get list of packages from list of dependencies
 	deps = deps_to_pkgs(deps_info)
 
-	# generate directory trees of all of them, and merge them together
-	contents = []
+	# generate trees of all of them, and merge them together
+	directories = []
+	files = []
 	for dep in deps:
-		directory = os.path.join(dep.path, "chroot")
-		dep_dirs = list_directory_tree(directory)
-		for dep_dir in dep_dirs:
-			directories.append(dep_dir[len(directory):]) # removes down the common prefix
-	print(directories)
+		# for each dependency...
+		dep_root = os.path.join(dep.path, "chroot")
+		dep_contents = list_directory_tree(dep_root)
+		for dep_item in dep_contents:
+			if os.path.isdir(dep_item):
+				directories.append(dep_item[len(dep_root):]) # removes down the common prefix
+			elif os.path.isfile(dep_item):
+				files.append(dep_item[len(dep_root):])
+
+	items = directories + files
+	print(items)
 
 
 

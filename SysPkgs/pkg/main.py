@@ -35,7 +35,6 @@ if args.install:
 	install_deb(args.install)
 elif args.test:
 	args = generate_bwrap_args([
-		"bubblewrap==0.10.0",
 		"bubblewrap",
 	])
 	for arg in args:
