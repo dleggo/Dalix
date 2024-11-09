@@ -374,6 +374,9 @@ def deps_to_pkgs(deps_info: list) -> list:
 
 	return pkg_deps
 
+def occurence_count_item_t(l: list) -> dict:
+	return {x: l.count(x) for x in l}
+
 def generate_bwrap_args(deps: list) -> list:
 	"""
 	Generates a list of bubblewrap arguments for setting up the container environment.
@@ -404,6 +407,8 @@ def generate_bwrap_args(deps: list) -> list:
 	# Get list of packages from list of dependencies
 	deps = deps_to_pkgs(deps_info)
 
+	item_t = namedtuple('item_t', ['bwrap_loc', 'fullpath', 'pkg', ])
+
 	# generate trees of all of them, and merge them together
 	directories = []
 	files = []
@@ -413,12 +418,42 @@ def generate_bwrap_args(deps: list) -> list:
 		dep_contents = list_directory_tree(dep_root)
 		for dep_item in dep_contents:
 			if os.path.isdir(dep_item):
-				directories.append(dep_item[len(dep_root):]) # removes down the common prefix
+				directories.append(item_t(
+					dep_item[len(dep_root):], # removes down the common prefix
+					dep_item,
+					dep
+				))
 			elif os.path.isfile(dep_item):
-				files.append(dep_item[len(dep_root):])
+				files.append(item_t(
+					dep_item[len(dep_root):], # removes down the common prefix
+					dep_item,
+					dep
+				))
 
-	items = directories + files
-	print(items)
+	# So now we have a list of all the files and directories that need to be included
+	# This list is massive but we must not panic...
+
+	# generate a dictionary of all of them with their occurence count
+	# files, and directories are all of type item_t
+	# so we need to convert them to their bwrap location
+	dir_occ = occurence_count(directories)
+	file_occ = occurence_count(files)
+
+	# We need to follow the rules defined in Pkgs.md
+
+	# for each directory...
+	# if occurence count = 1, symlink
+	# if occurence count > 1, create directory
+
+	for dir in dir_occ:
+		pass
+
+	# for each file...
+	# if occurence count = 1, symlink
+	# if occurence count > 1, only the file closest to the main package will be symlinked
+
+	for file in file_occ:
+		pass
 
 
 
