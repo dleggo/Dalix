@@ -14,7 +14,7 @@ import sys
 
 # Dependency = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
-root = ""
+root = "/home/derek/Code/dalixOS/Tests/testroot"
 
 class Package:
 	def __init__(self, name: str, version: Version, path: str):
@@ -184,18 +184,19 @@ def init_system():
 	then copies the necessary files into the root directory,
 	and finally runs the init script to finish setting up the system.
 	"""
-	global root
-	print(colored("running debbootstrap..", "green", attrs=["bold"]))
-	os.system(f"sudo debootstrap stable {root} http://deb.debian.org/debian/")
-	script_dir = os.path.dirname(os.path.realpath(__file__))
-	print(colored("copying files..", "green", attrs=["bold"]))
-	os.system(f"sudo cp {script_dir}/init_script.sh {root}/usr/bin/init_script.sh")
-	os.system(f"sudo cp {script_dir}/main.py {root}/usr/bin/main")
-	os.system(f"sudo cp {script_dir}/pkg.py {root}/usr/bin/pkg.py")
-	os.system(f"sudo chmod +x {root}/usr/bin/init_script.sh")
-	print(colored("running init script..", "green", attrs=["bold"]))
-	os.system(f"sudo arch-chroot {root} /usr/bin/init_script.sh")
-	print(colored("done", "green", attrs=["bold"]))
+	# global root
+	# print(colored("running debootstrap..", "green", attrs=["bold"]))
+	# print(colored("this may take a while..", "green", attrs=["bold"]))
+	# os.system(f"sudo debootstrap stable {root} http://deb.debian.org/debian/")
+	# script_dir = os.path.dirname(os.path.realpath(__file__))
+	# print(colored("copying files..", "green", attrs=["bold"]))
+	# os.system(f"sudo cp {script_dir}/init_script.sh {root}/usr/bin/init_script.sh")
+	# os.system(f"sudo cp {script_dir}/main.py {root}/usr/bin/main")
+	# os.system(f"sudo cp {script_dir}/pkg.py {root}/usr/bin/pkg.py")
+	# os.system(f"sudo chmod +x {root}/usr/bin/init_script.sh")
+	# print(colored("running init script..", "green", attrs=["bold"]))
+	# os.system(f"sudo arch-chroot {root} /usr/bin/init_script.sh")
+	# print(colored("done", "green", attrs=["bold"]))
 
 
 # path should point to a .deb file
@@ -1139,7 +1140,7 @@ def generate_bwrap_args(deps: list) -> list:
 
 
 
-
+sys.dont_write_bytecode = False
 if __name__ != "__main__":
 	print("This file is not meant to be imported!")
 	sys.exit(1)
@@ -1171,7 +1172,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-root = args.root
+# root = args.root
 
 if args.install:
 	install_deb(args.install)
@@ -1182,4 +1183,6 @@ elif args.test:
 	for arg in args:
 		print(arg)
 elif args.bootstrap:
-	init_system()
+	pass
+
+init_system()
