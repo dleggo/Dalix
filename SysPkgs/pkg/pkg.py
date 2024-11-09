@@ -407,7 +407,15 @@ def generate_bwrap_args(deps: list) -> list:
 	# Get list of packages from list of dependencies
 	deps = deps_to_pkgs(deps_info)
 
-	item_t = namedtuple('item_t', ['bwrap_loc', 'fullpath', 'pkg', ])
+	# item_t = namedtuple('item_t', ['bwrap_loc', 'fullpath', 'pkg', "occurences"])
+	class item_t:
+		def __init__(self, bwrap_loc, fullpath, pkg, occurences):
+			self.bwrap_loc = bwrap_loc
+			self.fullpath = fullpath
+			self.pkg = pkg
+			self.occurences = occurences
+		def __repr__(self):
+			return f"item_t({self.bwrap_loc}, {self.fullpath}, {self.pkg}, {self.occurences})"
 
 	# generate trees of all of them, and merge them together
 	directories = []
@@ -421,13 +429,15 @@ def generate_bwrap_args(deps: list) -> list:
 				directories.append(item_t(
 					dep_item[len(dep_root):], # removes down the common prefix
 					dep_item,
-					dep
+					dep,
+					None
 				))
 			elif os.path.isfile(dep_item):
 				files.append(item_t(
 					dep_item[len(dep_root):], # removes down the common prefix
 					dep_item,
-					dep
+					dep,
+					None
 				))
 
 	# So now we have a list of all the files and directories that need to be included
@@ -436,8 +446,18 @@ def generate_bwrap_args(deps: list) -> list:
 	# generate a dictionary of all of them with their occurence count
 	# files, and directories are all of type item_t
 	# so we need to convert them to their bwrap location
-	dir_occ = occurence_count(directories)
-	file_occ = occurence_count(files)
+
+	directories_bwrap_locations = [x.bwrap_loc for x in directories]
+	files_bwrap_locations = [x.bwrap_loc for x in files]
+
+	dirs_occ = occurence_count(directories_bwrap_locations)
+	files_occ = occurence_count(files_bwrap_locations)
+
+	for dir,occ in zip(directories, dirs_occ):
+		dir.occurences = occ
+
+	for file,occ in zip(files, files_occ):
+		file.occurences = occ
 
 	# We need to follow the rules defined in Pkgs.md
 
@@ -445,15 +465,15 @@ def generate_bwrap_args(deps: list) -> list:
 	# if occurence count = 1, symlink
 	# if occurence count > 1, create directory
 
-	for dir in dir_occ:
-		pass
+	for dir in directories:
+		print(dir)
 
 	# for each file...
 	# if occurence count = 1, symlink
 	# if occurence count > 1, only the file closest to the main package will be symlinked
 
-	for file in file_occ:
-		pass
+	for file in files:
+		print(file)
 
 
 
