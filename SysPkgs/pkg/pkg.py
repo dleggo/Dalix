@@ -39,20 +39,6 @@ class Package:
 			info = tomllib.load(f)
 		return info
 
-	def get_dependencies(path: str) -> list:
-		"""
-		Returns a list of dependencies for the package.
-
-		This function reads the dependencies from the pkg-info file and returns
-		a list of packages that the package depends on.
-
-		:param path: The path to the package directory containing the pkg-info file.
-		:return: A list of packages that the package depends on.
-		:raises AssertionError: If the package directory or pkg-info file does not exist.
-		"""
-		info = Package.get_info(path)
-		# TODO
-
 	def __repr__(self):
 		return f"Pkg({self.name}, {self.version}, {self.path})"
 
@@ -81,6 +67,38 @@ class Dependency:
 			return self.version > version
 		else: # comparison == None
 			return True
+
+	def parse(dep: str):
+		"""
+		Parses a dependency string and returns a dep_info_t representing the parsed dependency.
+
+		The dep_info_t structure has the following fields:
+			- name: The name of the package.
+			- comparison: The comparison operator used in the dependency string.
+			- version: The version of the package.
+
+		For example, if given the input "pkg1>=2.1.0", the output will be:
+			dep_info_t("pkg1", ">=", "2.1.0")
+		"""
+		if "==" in dep:
+			comparison = "=="
+		elif "=" in dep:
+			comparison = "="
+		elif ">=" in dep:
+			comparison = ">="
+		elif "<=" in dep:
+			comparison = "<="
+		elif ">" in dep:
+			comparison = ">"
+		elif "<" in dep:
+			comparison = "<"
+		else:
+			dep_name = dep
+			return Dependency(dep_name, None, None)
+
+		dep_name = dep.split(comparison)[0]
+		dep_version = dep.split(comparison)[1]
+		return Dependency(dep_name, comparison, dep_version)
 
 def get_deb_info(path: str) -> dict:
 	"""
@@ -225,6 +243,22 @@ def install_deb(path: str):
 					multiline_strings=True
 				),
 			)
+		# install dependencies from debians servers.
+		if "Dependencies" in info["Package"]:
+			pass
+
+def fetch_deps(pkg: Package, ignore_list=[]):
+	"""
+	Fetches the dependencies of a package from debian's servers.
+	"""
+
+	deps = []
+	info = pkg.get_info()
+	if not "Dependencies" in info["Package"]:
+		return []
+	for dep in info["Package"]["Dependencies"].split("\n"):
+		deps.append(Dependency.parse(dep))
+
 
 def get_pkg_list():
 	"""
@@ -304,31 +338,7 @@ def list_directory_tree(path: str) -> list:
 	return files
 
 
-def parse_dep(dep: str) -> Dependency:
-	"""
-	Parses a dependency string and returns a dep_info_t representing the parsed dependency.
 
-	The dep_info_t structure has the following fields:
-		- name: The name of the package.
-		- comparison: The comparison operator used in the dependency string.
-		- version: The version of the package.
-
-	For example, if given the input "pkg1>=2.1.0", the output will be:
-		dep_info_t("pkg1", ">=", "2.1.0")
-	"""
-	if "==" in dep:
-		comparison = "=="
-	elif ">=" in dep:
-		comparison = ">="
-	elif "<=" in dep:
-		comparison = "<="
-	else:
-		dep_name = dep
-		return Dependency(dep_name, None, None)
-
-	dep_name = dep.split(comparison)[0]
-	dep_version = dep.split(comparison)[1]
-	return Dependency(dep_name, comparison, dep_version)
 
 def get_deps_info(deps: list) -> list:
 	"""
@@ -351,7 +361,7 @@ def get_deps_info(deps: list) -> list:
 	"""
 	deps_info = []
 	for dep in deps:
-		deps_info.append(parse_dep(dep))
+		deps_info.append(Dependency.parse(dep))
 
 	return deps_info
 
