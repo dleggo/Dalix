@@ -374,6 +374,59 @@ def deps_to_pkgs(deps_info: list) -> list:
 
 	return pkg_deps
 
+def get_files_and_directories_from_deps(deps: list) -> list:
+	class item_t:
+		def __init__(self, bwrap_loc, fullpath, pkg, occurences):
+			self.bwrap_loc = bwrap_loc
+			self.fullpath = fullpath
+			self.pkg = pkg
+			self.occurences = occurences
+		def __repr__(self):
+			return f"Item({self.bwrap_loc}, {self.fullpath}, {self.pkg.name}, {self.occurences})"
+
+	# generate trees of all of them, and merge them together
+	directories = []
+	files = []
+	for dep in deps:
+		# for each dependency...
+		dep_root = os.path.join(dep.path, "chroot")
+		dep_contents = list_directory_tree(dep_root)
+		for dep_item in dep_contents:
+			if os.path.isdir(dep_item):
+				directories.append(item_t(
+					dep_item[len(dep_root):], # removes down the common prefix
+					dep_item,
+					dep,
+					None
+				))
+			elif os.path.isfile(dep_item):
+				files.append(item_t(
+					dep_item[len(dep_root):], # removes down the common prefix
+					dep_item,
+					dep,
+					None
+				))
+
+	# So now we have a list of all the files and directories that need to be included
+	# This list is massive but we must not panic...
+
+	# files, and directories are all of type item_t
+	# so we need to convert them to their bwrap location
+
+	directories_bwrap_locations = [x.bwrap_loc for x in directories]
+	files_bwrap_locations = [x.bwrap_loc for x in files]
+
+	dirs_occ = occurence_count(directories_bwrap_locations)
+	files_occ = occurence_count(files_bwrap_locations)
+
+	for dir,occ in zip(directories, dirs_occ):
+		dir.occurences = dirs_occ[occ]
+
+	for file,occ in zip(files, files_occ):
+		file.occurences = files_occ[occ]
+
+	return files, directories
+
 def occurence_count_item_t(l: list) -> dict:
 	return {x: l.count(x) for x in l}
 
@@ -408,56 +461,9 @@ def generate_bwrap_args(deps: list) -> list:
 	deps = deps_to_pkgs(deps_info)
 
 	# item_t = namedtuple('item_t', ['bwrap_loc', 'fullpath', 'pkg', "occurences"])
-	class item_t:
-		def __init__(self, bwrap_loc, fullpath, pkg, occurences):
-			self.bwrap_loc = bwrap_loc
-			self.fullpath = fullpath
-			self.pkg = pkg
-			self.occurences = occurences
-		def __repr__(self):
-			return f"item_t({self.bwrap_loc}, {self.fullpath}, {self.pkg}, {self.occurences})"
 
-	# generate trees of all of them, and merge them together
-	directories = []
-	files = []
-	for dep in deps:
-		# for each dependency...
-		dep_root = os.path.join(dep.path, "chroot")
-		dep_contents = list_directory_tree(dep_root)
-		for dep_item in dep_contents:
-			if os.path.isdir(dep_item):
-				directories.append(item_t(
-					dep_item[len(dep_root):], # removes down the common prefix
-					dep_item,
-					dep,
-					None
-				))
-			elif os.path.isfile(dep_item):
-				files.append(item_t(
-					dep_item[len(dep_root):], # removes down the common prefix
-					dep_item,
-					dep,
-					None
-				))
-
-	# So now we have a list of all the files and directories that need to be included
-	# This list is massive but we must not panic...
-
-	# generate a dictionary of all of them with their occurence count
-	# files, and directories are all of type item_t
-	# so we need to convert them to their bwrap location
-
-	directories_bwrap_locations = [x.bwrap_loc for x in directories]
-	files_bwrap_locations = [x.bwrap_loc for x in files]
-
-	dirs_occ = occurence_count(directories_bwrap_locations)
-	files_occ = occurence_count(files_bwrap_locations)
-
-	for dir,occ in zip(directories, dirs_occ):
-		dir.occurences = occ
-
-	for file,occ in zip(files, files_occ):
-		file.occurences = occ
+	# Get list of files and directories from list of dependencies
+	files, directories = get_files_and_directories_from_deps(deps)
 
 	# We need to follow the rules defined in Pkgs.md
 
@@ -465,15 +471,27 @@ def generate_bwrap_args(deps: list) -> list:
 	# if occurence count = 1, symlink
 	# if occurence count > 1, create directory
 
+	symlinked = []
 	for dir in directories:
-		print(dir)
+		if dir.occurences == 1:
+			# Everything is mounted within / so we don't have to worry about root inside the
+			# container. But outside of the container we do. therfore, src_path must be to
+			# inside /System/Packages not {root}/System/Package.
+			for sym in symlinked:
+				if dir.bwrap_loc.startswith(sym):
+					continue # Farther root path is already symlinked
+			src_path = dir.fullpath[len(root):]
+			args.append(f"--symlink {dir.bwrap_loc} {src_path}")
+			symlinked.append(dir.bwrap_loc)
+		elif dir.occurences > 1:
+			args.append(f"--mkdir {dir.bwrap_loc}")
 
 	# for each file...
 	# if occurence count = 1, symlink
 	# if occurence count > 1, only the file closest to the main package will be symlinked
 
 	for file in files:
-		print(file)
+		pass
 
 
 
