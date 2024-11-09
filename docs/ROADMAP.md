@@ -3,10 +3,11 @@
 	- [x] get meta-data
 	- [x] search packages
 	- [x] generate occurence count of each folder
-	- [ ] migrate to using classes for both Dependency and Package
+	- [x] migrate to using classes for both Dependency and Package
 		- [x] Package
 		- [x] Dependency
-	- [ ] launch bwrap with correct options
-		- [ ] Mount base system readonly
-		- [ ] Symlink required packages
+	- [x] launch bwrap with correct options
+		- [x] Mount base system readonly
+		- [x] Symlink required packages
+	- [ ] Fetch dependencies from debian's servers
 	- [ ] Post install scripts

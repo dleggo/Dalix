@@ -501,9 +501,4 @@ def generate_bwrap_args(deps: list) -> list:
 				src_path = file.fullpath[len(root):]
 				args.append(f"--symlink {file.bwrap_loc} {src_path}")
 
-
-
-	# generate mkdirs
-	# generate symlinks
-
 	return args
