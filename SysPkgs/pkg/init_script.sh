@@ -7,7 +7,7 @@ mkdir /Applications
 mkdir /Volumes
 mkdir /Users
 
-apt install sudo python3 python3-tomli-w python3-termcolor python3-packaging -y
+apt install sudo python3 python3-tomli-w python3-termcolor python3-packaging micro -y
 
 /sbin/adduser user --home /Users/user <<EOF
 1234
