@@ -21,7 +21,7 @@ class Package:
 		self.version = version
 		self.path = path
 
-	def get_info(path: str) -> dict:
+	def get_info(self) -> dict:
 		"""
 		Reads and returns package metadata from a pkg-info file.
 
@@ -33,9 +33,10 @@ class Package:
 		:return: A dictionary containing the package metadata.
 		:raises AssertionError: If the package directory or pkg-info file does not exist.
 		"""
+		path = self.path
 		assert os.path.exists(path), "Package not found!"
 		assert os.path.exists(path + "/pkg-info")
-		with open(path + "/pkg-info", "r") as f:
+		with open(path + "/pkg-info", "rb") as f:
 			info = tomllib.load(f)
 		return info
 
@@ -43,30 +44,29 @@ class Package:
 		return f"Pkg({self.name}, {self.version}, {self.path})"
 
 class Dependency:
-	def __init__(self, name: str, comparison: str, version: Version):
+	def __init__(self, name: str, comparisons: list, versions: list):
 		self.name = name
-		self.comparison = comparison
-		assert comparison in ["==", ">=", "<=", ">", "<", None], "Invalid comparison operator!"
-		if type(version) == str:
-			self.version = Version(version)
-		else:
-			self.version = version
+		self.comparisons = comparisons
+		self.versions = versions
 
 	def satisfied_by(self, version: Version) -> bool:
-		if self.comparison == "==":
-			return self.version == version
-		elif self.comparison == "=":
-			return self.version == version
-		elif self.comparison == ">=":
-			return self.version <= version
-		elif self.comparison == "<=":
-			return self.version >= version
-		elif self.comparison == ">":
-			return self.version < version
-		elif self.comparison == "<":
-			return self.version > version
-		else: # comparison == None
-			return True
+		for comparison, ver in zip(self.comparisons, self.versions):
+			if comparison == "==":
+				if version != Version(ver):
+					return False
+			elif comparison == ">=":
+				if version < Version(ver):
+					return False
+			elif comparison == "<=":
+				if version > Version(ver):
+					return False
+			elif comparison in [">", ">>"]:
+				if version <= Version(ver):
+					return False
+			elif comparison in ["<", "<<"]:
+				if version >= Version(ver):
+					return False
+		return True
 
 	def parse(dep: str):
 		"""
@@ -77,28 +77,23 @@ class Dependency:
 			- comparison: The comparison operator used in the dependency string.
 			- version: The version of the package.
 
-		For example, if given the input "pkg1>=2.1.0", the output will be:
-			dep_info_t("pkg1", ">=", "2.1.0")
+		For example, if given the input "pkg1 (>= 2.1.0)", the output will be:
+			Dependency("pkg1", ">=", "2.1.0")
 		"""
-		if "==" in dep:
-			comparison = "=="
-		elif "=" in dep:
-			comparison = "="
-		elif ">=" in dep:
-			comparison = ">="
-		elif "<=" in dep:
-			comparison = "<="
-		elif ">" in dep:
-			comparison = ">"
-		elif "<" in dep:
-			comparison = "<"
+		if "(" in dep:
+			name, constraint = dep.split("(", 1)
+			name = name.rstrip().lstrip()
+			constraint = constraint.strip(" )")
+			comparisons = []
+			versions = []
+			for part in constraint.split(","):
+				part = part.strip()
+				comparison, version = part.split(" ", 1)
+				comparisons.append(comparison)
+				versions.append(version)
+			return Dependency(name, comparisons, versions)
 		else:
-			dep_name = dep
-			return Dependency(dep_name, None, None)
-
-		dep_name = dep.split(comparison)[0]
-		dep_version = dep.split(comparison)[1]
-		return Dependency(dep_name, comparison, dep_version)
+			return Dependency(dep, None, None)
 
 def get_deb_info(path: str) -> dict:
 	"""
@@ -157,7 +152,7 @@ def deb_to_pkg_info(info: dict) -> dict:
 		pkg_info["Package"]["Description"] = info["Description"]
 		if "Depends" in info:
 			deps = info["Depends"]
-			deps = deps.replace(",", "\n").replace("(", "").replace(")", "").replace(" ", "")
+			# deps = deps.replace(",", "\n").replace("(", "").replace(")", "").replace(" ", "")
 			pkg_info["Package"]["Dependencies"] = deps
 		else:
 			pkg_info["Package"]["Dependencies"] = ""
@@ -245,19 +240,25 @@ def install_deb(path: str):
 			)
 		# install dependencies from debians servers.
 		if "Dependencies" in info["Package"]:
-			pass
+			print(Package(info["Package"]["Name"], Version(info["Package"]["Version"]), inst_dir))
+			fetch_deps(Package(info["Package"]["Name"], Version(info["Package"]["Version"]), inst_dir))
 
-def fetch_deps(pkg: Package, ignore_list=[]):
+def fetch_deps(pkg: Package):
 	"""
 	Fetches the dependencies of a package from debian's servers.
+	We make apt do the heavy lifting
 	"""
 
 	deps = []
+	print(pkg)
 	info = pkg.get_info()
 	if not "Dependencies" in info["Package"]:
-		return []
-	for dep in info["Package"]["Dependencies"].split("\n"):
-		deps.append(Dependency.parse(dep))
+		return
+	cmd = "apt satisfy --download-only"
+	dep_string = info["Package"]["Dependencies"]
+	with TemporaryDirectory() as tmpdir:
+		os.system(f"{cmd} \"{dep_string}\" -o Dir::Cache::Archives={tmpdir}")
+		deps = os.listdir(tmpdir)
 
 
 def get_pkg_list():
@@ -350,12 +351,12 @@ def get_deps_info(deps: list) -> list:
 		- comparison: The comparison operator used in the dependency string.
 		- version: The version of the package.
 
-	For example, if given the input ["pkg1>=2.1.0", "pkg2==3.2.1", "pkg3<=4.3.2", "pkg4"],
+	For example, if given the input ["pkg1 (>= 2.1.0)", "pkg2 (= 3.2.1)", "pkg3 (<= 4.3.2)", "pkg4"],
 	the output will be:
 	[
-		dep_info_t("pkg1", ">=", "2.1.0"),
-		dep_info_t("pkg2", "==", "3.2.1"),
-		dep_info_t("pkg3", "<=", "4.3.2"),
+		dep_info_t("pkg1", [">="], ["2.1.0"]),
+		dep_info_t("pkg2", ["="], ["3.2.1"]),
+		dep_info_t("pkg3", ["<="], ["4.3.2"]),
 		dep_info_t("pkg4", None, None)
 	]
 	"""
@@ -366,6 +367,26 @@ def get_deps_info(deps: list) -> list:
 	return deps_info
 
 def deps_to_pkgs(deps_info: list) -> list:
+	"""
+	Takes a list of Dependency objects and returns a list of Package objects representing the newest version
+	of each dependency that satisfies the dependency's comparison operators.
+
+	For example, if given the input
+	[
+		Dependency("pkg1", [">="], ["2.1.0"]),
+		Dependency("pkg2", ["="], ["3.2.1"]),
+		Dependency("pkg3", ["<="], ["4.3.2"]),
+		Dependency("pkg4", None, None)
+	],
+	the output will be a list of Package objects representing the newest version of each package that
+	satisfies the given comparison operators.
+
+	For example, if the newest version of "pkg1" is 2.2.0, the output would contain a Package object
+ représentating the newest version of "pkg1" that satisfies ">=" 2.1.0, which is 2.2.0.
+
+	:param deps_info: A list of Dependency objects.
+	:return: A list of Package objects.
+	"""
 	pkg_deps = []
 
 	for dep in deps_info:

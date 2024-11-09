@@ -17,6 +17,7 @@ For an example package of libsqsh
 
 # currently only type 1 description files are supported.
 InfoType = 1
+DepsIncluded = false
 
 # Neccesary fields
 [Package]
@@ -32,11 +33,11 @@ which can span multiple lines.
 '''
 
 Dependencies = '''
-libsqsh=1.2.3
-python>=3.10
-joy
-happiness
-love
+libsqsh (>= 1.2.3),
+python (>= 3.10),
+joy,
+happiness,
+love,
 etc.
 '''
 
