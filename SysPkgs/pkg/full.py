@@ -184,19 +184,18 @@ def init_system():
 	then copies the necessary files into the root directory,
 	and finally runs the init script to finish setting up the system.
 	"""
-	# global root
-	# print(colored("running debootstrap..", "green", attrs=["bold"]))
-	# print(colored("this may take a while..", "green", attrs=["bold"]))
-	# os.system(f"sudo debootstrap stable {root} http://deb.debian.org/debian/")
-	# script_dir = os.path.dirname(os.path.realpath(__file__))
-	# print(colored("copying files..", "green", attrs=["bold"]))
-	# os.system(f"sudo cp {script_dir}/init_script.sh {root}/usr/bin/init_script.sh")
-	# os.system(f"sudo cp {script_dir}/main.py {root}/usr/bin/main")
-	# os.system(f"sudo cp {script_dir}/pkg.py {root}/usr/bin/pkg.py")
-	# os.system(f"sudo chmod +x {root}/usr/bin/init_script.sh")
-	# print(colored("running init script..", "green", attrs=["bold"]))
-	# os.system(f"sudo arch-chroot {root} /usr/bin/init_script.sh")
-	# print(colored("done", "green", attrs=["bold"]))
+	global root
+	print(colored("running debootstrap..", "green", attrs=["bold"]))
+	print(colored("this may take a while..", "green", attrs=["bold"]))
+	os.system(f"sudo debootstrap stable {root} http://deb.debian.org/debian/")
+	script_dir = os.path.dirname(os.path.realpath(__file__))
+	print(colored("copying files..", "green", attrs=["bold"]))
+	os.system(f"sudo cp {script_dir}/init_script.sh {root}/usr/bin/init_script.sh")
+	os.system(f"sudo cp {script_dir}/full.py {root}/usr/bin/pkg")
+	os.system(f"sudo chmod +x {root}/usr/bin/init_script.sh")
+	print(colored("running init script..", "green", attrs=["bold"]))
+	os.system(f"sudo arch-chroot {root} /usr/bin/init_script.sh")
+	print(colored("done", "green", attrs=["bold"]))
 
 
 # path should point to a .deb file
@@ -227,7 +226,7 @@ def install_deb(path: str):
 		info = deb_to_pkg_info(info)
 		# install package
 
-		inst_dir = f"{root}/System/Packages/{info["Package"]["Name"]}***{info["Package"]["Version"]}"
+		inst_dir = f"{root}/System/Packages/{info['Package']['Name']}***{info['Package']['Version']}"
 
 		if os.path.exists(inst_dir):
 			os.system(f"rm -R {inst_dir}")
@@ -590,7 +589,6 @@ def generate_bwrap_args(deps: list) -> list:
 
 
 
-sys.dont_write_bytecode = False
 if __name__ != "__main__":
 	print("This file is not meant to be imported!")
 	sys.exit(1)
@@ -633,6 +631,4 @@ elif args.test:
 	for arg in args:
 		print(arg)
 elif args.bootstrap:
-	pass
-
-init_system()
+	init_system()
