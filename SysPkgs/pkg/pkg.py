@@ -82,12 +82,6 @@ class Dependency:
 		else: # comparison == None
 			return True
 
-class BwrapItem:
-	def __init__(self, path: str, mountpoint: str, directory: bool):
-		self.path = path
-		self.mountpoint = mountpoint
-		self.directory = directory
-
 def get_deb_info(path: str) -> dict:
 	"""
 	Extracts metadata from a .deb package.
