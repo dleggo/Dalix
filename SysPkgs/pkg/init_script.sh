@@ -18,4 +18,4 @@ apt install sudo -y
 EOF
 /sbin/usermod -aG sudo user
 
-chmod +x /usr/bin/main
+chmod +x /usr/bin/pkg

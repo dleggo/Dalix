@@ -178,9 +178,15 @@ def symlink(src: str, dst: str):
 	os.symlink(src, dst, target_is_directory=os.path.isdir(src))
 
 def init_system():
+	"""
+	Initializes the system by first running debbootstrap to create a
+	basic system in the root directory,
+	then copies the necessary files into the root directory,
+	and finally runs the init script to finish setting up the system.
+	"""
 	global root
 	print(colored("running debbootstrap..", "green", attrs=["bold"]))
-	# os.system(f"sudo debootstrap stable {root} http://deb.debian.org/debian/")
+	os.system(f"sudo debootstrap stable {root} http://deb.debian.org/debian/")
 	script_dir = os.path.dirname(os.path.realpath(__file__))
 	print(colored("copying files..", "green", attrs=["bold"]))
 	os.system(f"sudo cp {script_dir}/init_script.sh {root}/usr/bin/init_script.sh")
@@ -1116,17 +1122,17 @@ def generate_bwrap_args(deps: list) -> list:
 
 
 
-###################################################
-###################################################
-###################################################
-###################################################
-###################################################
-###################################################
-###################################################
-###################################################
-###################################################
-###################################################
-###################################################
+
+
+
+
+
+
+
+
+
+
+
 
 
 
