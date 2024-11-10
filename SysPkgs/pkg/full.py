@@ -4,13 +4,14 @@ import os
 from tempfile import TemporaryDirectory
 import tomllib
 import tomli_w
-from packaging.version import Version
+# from packaging.version import Version
 from collections import namedtuple
 import argparse
 from shutil import copytree, copyfile
 import termcolor
 from termcolor import colored
 import sys
+# from semver.version import Version
 
 # Dependency = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
@@ -30,6 +31,26 @@ def log(msg: str, level: int = 0):
 		print(f"[{colored('!', 'yellow')}] {msg}")
 	elif level == ERROR:
 		print(f"[{colored('X', 'red')}] {msg}")
+
+class Version:
+	def __init__(self, version: str):
+		self.version = version
+
+	def __lt__(self, other):
+		return os.system(f"dpkg --compare-versions {self.version} lt {other.version}") == 0
+	def __gt__(self, other):
+		return os.system(f"dpkg --compare-versions {self.version} gt {other.version}") == 0
+	def __eq__(self, other):
+		return os.system(f"dpkg --compare-versions {self.version} eq {other.version}") == 0
+	def __ne__(self, other):
+		return os.system(f"dpkg --compare-versions {self.version} ne {other.version}") == 0
+	def __le__(self, other):
+		return os.system(f"dpkg --compare-versions {self.version} le {other.version}") == 0
+	def __ge__(self, other):
+		return os.system(f"dpkg --compare-versions {self.version} ge {other.version}") == 0
+
+	def __str__(self):
+		return self.version
 
 class Package:
 	def __init__(self, name: str, version: Version, path: str):
@@ -68,21 +89,21 @@ class Dependency:
 		self.versions = versions
 
 	def satisfied_by(self, version: Version) -> bool:
-		for comparison, ver in zip(self.comparisons, self.versions):
-			if comparison == "==":
-				if version != Version(ver):
+		for comparison, needed_ver in zip(self.comparisons, self.versions):
+			if comparison == "=":
+				if Version(needed_ver) != Version(version):
 					return False
 			elif comparison == ">=":
-				if version < Version(ver):
+				if Version(needed_ver) > Version(version):
 					return False
 			elif comparison == "<=":
-				if version > Version(ver):
+				if Version(needed_ver) < Version(version):
 					return False
 			elif comparison in [">", ">>"]:
-				if version <= Version(ver):
+				if Version(needed_ver) >= Version(version):
 					return False
 			elif comparison in ["<", "<<"]:
-				if version >= Version(ver):
+				if Version(needed_ver) <= Version(version):
 					return False
 		return True
 
@@ -659,7 +680,7 @@ if args.install:
 		install_deps(args.install)
 elif args.test:
 	args = generate_bwrap_args([
-		"code (>= 1)",
+		"neovim",
 	])
 	for arg in args:
 		print(arg)
