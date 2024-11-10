@@ -14,7 +14,22 @@ import sys
 
 # Dependency = namedtuple('dep_info_t', ['name', 'comparison', 'version'])
 
-root = "/home/derek/Code/dalixOS/Tests/testroot"
+root = ""
+
+GOOD = 0
+INFO = 1
+WARNING = 2
+ERROR = 3
+
+def log(msg: str, level: int = 0):
+	if level == GOOD:
+		print(f"[{colored('+', 'green')}] {msg}")
+	elif level == INFO:
+		print(f"[{colored('*', 'blue')}] {msg}")
+	elif level == WARNING:
+		print(f"[{colored('!', 'yellow')}] {msg}")
+	elif level == ERROR:
+		print(f"[{colored('X', 'red')}] {msg}")
 
 class Package:
 	def __init__(self, name: str, version: Version, path: str):
@@ -187,19 +202,19 @@ def init_system():
 	global root
 	print(colored("running debootstrap..", "green", attrs=["bold"]))
 	print(colored("this may take a while..", "green", attrs=["bold"]))
-	os.system(f"sudo debootstrap stable {root} http://deb.debian.org/debian/")
+	os.system(f"debootstrap stable {root} http://deb.debian.org/debian/")
 	script_dir = os.path.dirname(os.path.realpath(__file__))
 	print(colored("copying files..", "green", attrs=["bold"]))
-	os.system(f"sudo cp {script_dir}/init_script.sh {root}/usr/bin/init_script.sh")
-	os.system(f"sudo cp {script_dir}/full.py {root}/usr/bin/pkg")
-	os.system(f"sudo chmod +x {root}/usr/bin/init_script.sh")
+	os.system(f"cp {script_dir}/init_script.sh {root}/usr/bin/init_script.sh")
+	os.system(f"cp {script_dir}/full.py {root}/usr/bin/pkg")
+	os.system(f"chmod +x {root}/usr/bin/init_script.sh")
 	print(colored("running init script..", "green", attrs=["bold"]))
-	os.system(f"sudo arch-chroot {root} /usr/bin/init_script.sh")
+	os.system(f"arch-chroot {root} /usr/bin/init_script.sh")
 	print(colored("done", "green", attrs=["bold"]))
 
 
 # path should point to a .deb file
-def install_deb(path: str):
+def install_deb(path: str, fetch_dependencies: bool = True):
 	"""
 	Installs a .deb package into the system.
 
@@ -220,11 +235,14 @@ def install_deb(path: str):
 	# create pkg directory
 	with TemporaryDirectory() as tmpdir:
 		# extract pkg
+		log(f"Extracting {path}...")
 		os.system(f"dpkg -x {path} {tmpdir}")
 		# extract metadata
 		info = get_deb_info(path)
 		info = deb_to_pkg_info(info)
 		# install package
+
+		log(f"Installing {path}...")
 
 		inst_dir = f"{root}/System/Packages/{info['Package']['Name']}***{info['Package']['Version']}"
 
@@ -260,11 +278,25 @@ def install_deb(path: str):
 				),
 			)
 		# install dependencies from debians servers.
-		if "Dependencies" in info["Package"]:
-			print(Package(info["Package"]["Name"], Version(info["Package"]["Version"]), inst_dir))
-			fetch_deps(Package(info["Package"]["Name"], Version(info["Package"]["Version"]), inst_dir))
+		if "Dependencies" in info["Package"] and fetch_dependencies:
+			install_deps_for_pkg(Package(info["Package"]["Name"], Version(info["Package"]["Version"]), inst_dir))
 
-def fetch_deps(pkg: Package):
+def install_deps(dep_string: str):
+	cmd = "apt satisfy --download-only"
+	with TemporaryDirectory() as tmpdir:
+		os.system(f"{cmd} \"{dep_string}\" -o Dir::Cache::Archives={tmpdir} -y")
+		deps = os.listdir(tmpdir)
+		for dep in deps:
+			if dep[-4:] != ".deb":
+				continue
+			log(f"Going to install {dep}...")
+			try:
+				install_deb(f"{tmpdir}/{dep}", fetch_dependencies=False)
+			except Exception as e:
+				log(f"Failed to install {dep}! Skipping for now...", WARNING)
+				print(e)
+				continue
+def install_deps_for_pkg(pkg: Package):
 	"""
 	Fetches the dependencies of a package from debian's servers.
 	We make apt do the heavy lifting
@@ -277,9 +309,7 @@ def fetch_deps(pkg: Package):
 		return
 	cmd = "apt satisfy --download-only"
 	dep_string = info["Package"]["Dependencies"]
-	with TemporaryDirectory() as tmpdir:
-		os.system(f"sudo {cmd} \"{dep_string}\" -o Dir::Cache::Archives={tmpdir}")
-		deps = os.listdir(tmpdir)
+	install_deps(dep_string)
 
 
 def get_pkg_list():
@@ -620,10 +650,13 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-# root = args.root
+root = args.root
 
 if args.install:
-	install_deb(args.install)
+	if args.install.startswith("./"):
+		install_deb(args.install)
+	else:
+		install_deps(args.install)
 elif args.test:
 	args = generate_bwrap_args([
 		"code (>= 1)",
