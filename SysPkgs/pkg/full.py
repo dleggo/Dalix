@@ -60,6 +60,9 @@ class Package:
 		self.version = version
 		self.path = path
 
+	def __eq__(self, other):
+		return self.name == other.name and self.version == other.version and self.path == other.path
+
 	def get_info(self) -> dict:
 		"""
 		Reads and returns package metadata from a pkg-info file.
@@ -78,6 +81,13 @@ class Package:
 		with open(path + "/pkg-info", "rb") as f:
 			info = tomllib.load(f)
 		return info
+
+	def get_deps(self) -> list:
+		info = self.get_info()
+		deps = info["dependencies"]
+		pkgs = deps_to_pkgs(deps)
+
+		return pkgs
 
 	def __repr__(self):
 		return f"Pkg({self.name}, {self.version}, {self.path})"
@@ -466,10 +476,12 @@ def deps_to_pkgs(deps_info: list) -> list:
 		if not pkgs:
 			raise ValueError(f"Could not find dependency \"{dep.name}\"")
 
-		best = pkgs[0]
+		best = None
 		for pkg in pkgs:
 			if pkg.version > best.version and dep.satisfied_by(pkg.version):
 				best = pkg
+		if best == None:
+			raise ValueError(f"Could not find dependency \"{dep.name}\"")
 		pkg_deps.append(best)
 
 	return pkg_deps
@@ -531,6 +543,28 @@ def occurence_count(l: list) -> dict:
 	return {x: l.count(x) for x in l}
 
 
+def fill_dep_tree(dep, ignore_list=[]) -> list:
+	"""
+	Returns a list of all dependencies required for the container from a list of all the
+	dependenecies that are specified by the caller.
+
+	:param deps: A list of dependencies required for the container.
+	:return: A list of all dependencies required for the container.
+	"""
+
+	output = []
+	dep = deps_to_pkgs([dep])[0] # ;)
+	children = []
+
+	if dep in ignore_list:
+		return []
+
+	for child in dep.get_deps():
+		if child not in ignore_list:
+			pass
+
+
+
 def generate_bwrap_args(deps: list) -> list:
 	"""
 	Generates a list of bubblewrap arguments for setting up the container environment.
@@ -560,6 +594,7 @@ def generate_bwrap_args(deps: list) -> list:
 
 	# Get list of packages from list of dependencies
 	deps = deps_to_pkgs(deps_info)
+	deps = fill_dep_tree(deps)
 
 	# item_t = namedtuple('item_t', ['bwrap_loc', 'fullpath', 'pkg', "occurences"])
 
