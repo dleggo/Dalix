@@ -17,4 +17,4 @@ files!
 
 We are currently under heavy development so expect [issues](https://github.com/dleggo/Dalix/issues).
 
-See our [homepage](https://dleggo.github.io/Dalix) for more information!
+See our [homepage](https://figsystems.github.io/dalixOS/) for more information!
